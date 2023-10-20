@@ -1,0 +1,59 @@
+{
+    "name": "daniser/laravel-wbeng-client",
+    "type": "library",
+    "description": "WBEngine interface library Laravel integration.",
+    "keywords": ["wbeng", "wbengine", "booking", "web booking engine", "laravel"],
+    "license": "MIT",
+    "support": {
+        "issues": "https://github.com/daniser/laravel-wbeng-client/issues",
+        "source": "https://github.com/daniser/laravel-wbeng-client"
+    },
+    "authors": [
+        {
+            "name": "Sergey Danilchenko",
+            "email": "s.danilchenko@ttbooking.ru"
+        }
+    ],
+    "require": {
+        "php": "^8.1",
+        "daniser/wbeng-client": "dev-master",
+        "laravel/framework": "^9.0 || ^10.0",
+        "symfony/http-client": "^6.3"
+    },
+    "require-dev": {
+        "laravel/pint": "^1.0",
+        "orchestra/testbench": "^7.0 || ^8.0",
+        "phpunit/phpunit": "^9.5 || ^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "TTBooking\\WBEngine\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TTBooking\\WBEngine\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TTBooking\\WBEngine\\WBEngineServiceProvider"
+            ],
+            "aliases": {
+                "WBEngine": "TTBooking\\WBEngine\\Facades\\WBEngine"
+            }
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": true
+        },
+        "sort-packages": true
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
