@@ -6,7 +6,7 @@ namespace TTBooking\WBEngine\Console;
 
 use Illuminate\Console\Command;
 use Symfony\Component\Console\Attribute\AsCommand;
-use TTBooking\WBEngine\ClientInterface;
+use TTBooking\WBEngine\Contracts\ClientFactory;
 use function TTBooking\WBEngine\fly;
 
 #[AsCommand(
@@ -23,7 +23,8 @@ class SearchCommand extends Command
     protected $signature = 'wbeng:search
         {from : Origin location code}
         {to : Destination location code}
-        {date : Flight date}';
+        {date : Flight date}
+        {--connection= : Using connection}';
 
     /**
      * The console command description.
@@ -35,13 +36,14 @@ class SearchCommand extends Command
     /**
      * Execute the console command.
      */
-    public function handle(ClientInterface $client): void
+    public function handle(ClientFactory $clientFactory): void
     {
-        $client->searchFlights(fly()
-            ->from($this->argument('from'))
-            ->to($this->argument('to'))
-            ->at($this->argument('date'))
-        );
+        $clientFactory->connection($this->option('connection'))
+            ->searchFlights(fly()
+                ->from($this->argument('from'))
+                ->to($this->argument('to'))
+                ->at($this->argument('date'))
+            );
 
         $this->info('Search successfully finished.');
     }

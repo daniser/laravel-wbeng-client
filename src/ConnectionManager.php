@@ -13,7 +13,7 @@ use TTBooking\WBEngine\DTO\Air\SearchFlights\Response as SearchResponse;
 /**
  * @extends Support\Manager<ClientInterface>
  */
-class ConnectionManager extends Support\Manager implements ClientInterface
+class ConnectionManager extends Support\Manager implements Contracts\ClientFactory, ClientInterface
 {
     protected string $configName = 'wbeng-client';
 
