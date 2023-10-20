@@ -41,10 +41,9 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
     {
         $this->mergeConfigFrom(__DIR__.'/../config/wbeng-client.php', 'wbeng-client');
 
-        $this->app->alias('wbeng-client', Contracts\ClientFactory::class);
-        $this->app->alias('wbeng-client', ClientInterface::class);
         $this->app->singleton('wbeng-client.connection', static fn ($app) => $app['wbeng-client']->connection());
-        $this->app->bind(ClientInterface::class, 'wbeng-client.connection');
+        $this->app->alias('wbeng-client', Contracts\ClientFactory::class);
+        $this->app->alias('wbeng-client.connection', ClientInterface::class);
     }
 
     /**
