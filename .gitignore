@@ -1,5 +1,6 @@
 /vendor
 /.idea
+/phpstan.neon
 /phpunit.xml
 composer.phar
 composer.lock
