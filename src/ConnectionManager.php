@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine;
 
+use Illuminate\Support\Arr;
 use TTBooking\WBEngine\DTO\Air\Common\RequestContext;
 use TTBooking\WBEngine\DTO\Air\FlightFares\Request\Parameters as FaresQuery;
 use TTBooking\WBEngine\DTO\Air\FlightFares\Response as FaresResponse;
@@ -29,8 +30,10 @@ class ConnectionManager extends Support\Manager implements Contracts\ClientFacto
 
     protected function createDefaultDriver(array $config, string $connection): ClientInterface
     {
+        unset($config['driver']);
+
         return $this->container->make(Client::class, [
-            'baseUri' => $config['uri'],
+            'baseUri' => Arr::pull($config, 'uri'),
             'context' => new RequestContext(...$config),
         ]);
     }
