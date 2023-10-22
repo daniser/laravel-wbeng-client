@@ -53,14 +53,14 @@ class SearchCommand extends Command
                 label: 'From',
                 options: $prompter(...),
                 placeholder: 'Moscow',
-                hint: 'Departure location code',
+                hint: 'Departure location',
             );
 
             $destination = $this->argument('to') ?? search(
                 label: 'To',
                 options: $prompter(...),
                 placeholder: 'St. Petersburg',
-                hint: 'Arrival location code',
+                hint: 'Arrival location',
             );
         } else {
             $origin = $this->argument('from') ?? text(
