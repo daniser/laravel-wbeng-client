@@ -10,6 +10,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\Contracts\ClientFactory;
+use TTBooking\WBEngine\DTO\Air\Common\ResponseContext;
 use TTBooking\WBEngine\DTO\Air\SearchFlights\Response;
 
 use function Laravel\Prompts\{info, note, search, select, spin, table, text, warning};
@@ -48,54 +49,14 @@ class SearchCommand extends Command
         /** @var null|callable(string): array<string, string> $prompter */
         $prompter = config('wbeng-client.iata_location_prompter');
 
-        if ($prompter) {
-            $origin = $this->argument('from') ?? search(
-                label: 'From',
-                options: $prompter(...),
-                placeholder: 'Moscow',
-                hint: 'Departure location',
-            );
-
-            $destination = $this->argument('to') ?? search(
-                label: 'To',
-                options: $prompter(...),
-                placeholder: 'St. Petersburg',
-                hint: 'Arrival location',
-            );
-        } else {
-            $origin = $this->argument('from') ?? text(
-                label: 'From',
-                placeholder: 'MOW',
-                required: true,
-                hint: 'Departure location code',
-            );
-
-            $destination = $this->argument('to') ?? text(
-                label: 'To',
-                placeholder: 'LED',
-                required: true,
-                hint: 'Arrival location code',
-            );
-        }
-
-        $date = $this->argument('date') ?? text(
-            label: 'Date',
-            placeholder: date('Y-m-d'),
-            required: true,
-            hint: 'Date of departure',
+        $result = $this->searchFlights(
+            clientFactory: $clientFactory,
+            origin: $this->getDepartureLocation($prompter),
+            destination: $this->getArrivalLocation($prompter),
+            date: $this->getDepartureDate(),
         );
 
-        $result = spin(fn (): Response => $clientFactory->connection($this->option('connection'))->searchFlights(
-            fly()->from($origin)->to($destination)->at($date)
-        ), 'Searching flights...');
-
-        note(sprintf(
-            "<question>%s</question>\t\t%s\t\t<comment>%s</comment>\t\t<info>%s</info>",
-            'WBENG '.$result->context->version,
-            $result->context->environment,
-            $result->context->profile,
-            implode(',', $result->context->provider),
-        ));
+        static::status($result->context);
 
         if (! $result->flightGroups) {
             warning('No flights found.');
@@ -103,48 +64,10 @@ class SearchCommand extends Command
             return static::FAILURE;
         }
 
-        $rows = [];
-        $table = windows_os() || $this->option('table');
-        $flightGroups = array_values(Arr::sort($result->flightGroups, 'fares.fareTotal'));
-        foreach ($flightGroups as $id => $flightGroup) {
-            $row = [
-                data_get($flightGroup, 'itineraries.^.flights.^.segments.^.dateBegin')->format('H:i'),
-                data_get($flightGroup, 'itineraries.$.flights.$.segments.$.dateEnd')->format('H:i'),
-                $flightGroup->carrier->code.' '.$flightGroup->provider.' '.$flightGroup->gds,
-                data_get($flightGroup, 'itineraries.^.flights.^.segments.^.locationBegin.code').'-'.
-                data_get($flightGroup, 'itineraries.$.flights.$.segments.$.locationEnd.code'),
-                data_get($flightGroup, 'itineraries.0.flights.0.segments.0.carrier.code').'-'.
-                data_get($flightGroup, 'itineraries.0.flights.0.segments.0.flightNumber'),
-                $table ? self::rcell($flightGroup->fares->fareTotal) : $flightGroup->fares->fareTotal,
-            ];
-
-            if ($table) {
-                $rows[] = [self::rcell($id + 1), ...$row];
-            } else {
-                $rows[$id + 1] = sprintf('%s  %s  %-11s  %s  %-7s  %7d', ...$row);
-            }
-        }
-
-        if ($table) {
-            table(['#', 'Departure', 'Arrival', 'Carrier/GDS', 'Route', 'Flight', 'Fare total'], $rows);
-
-            $flightId = (int) text(
-                label: 'Enter flight #',
-                required: true,
-                validate: static fn (string $value) => filter_var($value, FILTER_VALIDATE_INT, ['options' => [
-                    'min_range' => 1,
-                    'max_range' => count($rows),
-                ]]) === false ? 'Please enter valid flight #' : null,
-                hint: 'Choose flight to inspect its details',
-            );
-        } else {
-            $flightId = select(
-                label: 'Select flight',
-                options: $rows,
-                scroll: 25,
-                hint: 'Choose flight to inspect its details',
-            );
-        }
+        $rows = static::collectData($result);
+        $flightId = windows_os() || $this->option('table')
+            ? static::displayTable($rows)
+            : static::displaySelect($rows);
 
         info(gettype($flightId));
         info((string) $flightId);
@@ -152,6 +75,152 @@ class SearchCommand extends Command
         info('Search successfully finished.');
 
         return static::SUCCESS;
+    }
+
+    /**
+     * @param  null|callable(string): array<string, string>  $prompter
+     */
+    protected function getDepartureLocation(callable $prompter = null): string
+    {
+        /** @var string */
+        return $this->argument('from') ?? static::location(
+            label: 'From',
+            prompter: $prompter,
+            placeholder: 'MOW|Moscow',
+            hint: 'Departure location',
+        );
+    }
+
+    /**
+     * @param  null|callable(string): array<string, string>  $prompter
+     */
+    protected function getArrivalLocation(callable $prompter = null): string
+    {
+        /** @var string */
+        return $this->argument('to') ?? static::location(
+            label: 'To',
+            prompter: $prompter,
+            placeholder: 'LED|St. Petersburg',
+            hint: 'Arrival location',
+        );
+    }
+
+    protected function getDepartureDate(): string
+    {
+        /** @var string */
+        return $this->argument('date') ?? text(
+            label: 'Date',
+            placeholder: date('Y-m-d'),
+            required: true,
+            hint: 'Date of departure',
+        );
+    }
+
+    protected function searchFlights(ClientFactory $clientFactory, string $origin, string $destination, string $date): Response
+    {
+        /** @var string $connection */
+        $connection = $this->option('connection');
+
+        return spin(fn (): Response => $clientFactory->connection($connection)->searchFlights(
+            fly()->from($origin)->to($destination)->at($date)
+        ), 'Searching flights...');
+    }
+
+    protected static function status(ResponseContext $context): void
+    {
+        note(sprintf(
+            "<question>%s</question>\t\t%s\t\t<comment>%s</comment>\t\t<info>%s</info>",
+            'WBENG '.$context->version,
+            $context->environment,
+            $context->profile,
+            implode(',', $context->provider),
+        ));
+    }
+
+    /**
+     * @return list<list<string>>
+     */
+    protected static function collectData(Response $result): array
+    {
+        $rows = [];
+        /** @var list<Response\FlightGroup> $flightGroups */
+        $flightGroups = array_values(Arr::sort($result->flightGroups, 'fares.fareTotal'));
+        foreach ($flightGroups as $flightGroup) {
+            $rows[] = [
+                data_get($flightGroup, 'itineraries.^.flights.^.segments.^.dateBegin')->format('H:i'),
+                data_get($flightGroup, 'itineraries.$.flights.$.segments.$.dateEnd')->format('H:i'),
+                $flightGroup->carrier->code.' '.$flightGroup->provider.' '.$flightGroup->gds,
+                data_get($flightGroup, 'itineraries.^.flights.^.segments.^.locationBegin.code').'-'.
+                data_get($flightGroup, 'itineraries.$.flights.$.segments.$.locationEnd.code'),
+                data_get($flightGroup, 'itineraries.0.flights.0.segments.0.carrier.code').'-'.
+                data_get($flightGroup, 'itineraries.0.flights.0.segments.0.flightNumber'),
+                $flightGroup->fares->fareTotal,
+            ];
+        }
+
+        return $rows;
+    }
+
+    /**
+     * @param  list<list<string>>  $rows
+     */
+    protected static function displayTable(array $rows): int
+    {
+        $rows = Arr::map($rows, static function (array $row, int $id) {
+            $fareTotal = array_pop($row);
+
+            return [self::rcell($id + 1), ...$row, self::rcell($fareTotal)];
+        });
+
+        table(['#', 'Departure', 'Arrival', 'Carrier/GDS', 'Route', 'Flight', 'Fare total'], $rows);
+
+        return (int) text(
+            label: 'Enter flight #',
+            required: true,
+            validate: static fn (string $value) => filter_var($value, FILTER_VALIDATE_INT, ['options' => [
+                'min_range' => 1,
+                'max_range' => count($rows),
+            ]]) === false ? 'Please enter valid flight #' : null,
+            hint: 'Choose flight to inspect its details',
+        );
+    }
+
+    /**
+     * @param  list<list<string>>  $rows
+     */
+    protected static function displaySelect(array $rows): int
+    {
+        $rows = Arr::mapWithKeys($rows, static function (array $row, int $id) {
+            return [$id + 1 => sprintf('%s  %s  %-11s  %s  %-7s  %7d', ...$row)];
+        });
+
+        return (int) select(
+            label: 'Select flight',
+            options: $rows,
+            scroll: 25,
+            hint: 'Choose flight to inspect its details',
+        );
+    }
+
+    /**
+     * @param  null|callable(string): array<string, string>  $prompter
+     */
+    protected static function location(string $label, callable $prompter = null, string $placeholder = '', string $hint = ''): string
+    {
+        $parts = explode('|', $placeholder);
+
+        return $prompter
+            ? (string) search(
+                label: $label,
+                options: $prompter(...),
+                placeholder: $parts[1] ?? $parts[0],
+                hint: $hint,
+            ) : text(
+                label: $label,
+                placeholder: $parts[0],
+                required: true,
+                hint: $hint.' code',
+            );
     }
 
     private static function rcell(string|int $value): TableCell
