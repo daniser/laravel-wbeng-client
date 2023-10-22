@@ -17,25 +17,7 @@ use TTBooking\WBEngine\Contracts\Factory;
  */
 abstract class Manager implements Factory
 {
-    /**
-     * The container instance.
-     *
-     * @var Container
-     */
-    protected Container $container;
-
-    /**
-     * The configuration repository instance.
-     *
-     * @var Repository
-     */
-    protected Repository $config;
-
-    /**
-     * Configuration name.
-     *
-     * @var string
-     */
+    /** Configuration name. */
     protected string $configName;
 
     /**
@@ -55,20 +37,15 @@ abstract class Manager implements Factory
     /**
      * Create a new manager instance.
      *
-     * @param  Container  $container
-     * @param  Repository  $config
-     * @return void
+     * @param  Container  $container  The container instance.
+     * @param  Repository  $config    The configuration repository instance.
      */
-    public function __construct(Container $container, Repository $config)
+    public function __construct(protected Container $container, protected Repository $config)
     {
-        $this->container = $container;
-        $this->config = $config;
     }
 
     /**
      * Get the default driver name.
-     *
-     * @return string
      */
     public function getDefaultDriver(): string
     {
@@ -97,7 +74,7 @@ abstract class Manager implements Factory
      * @param  array<mixed>  $parameters
      * @return mixed
      */
-    public function __call(string $method, array $parameters)
+    public function __call(string $method, array $parameters): mixed
     {
         return $this->connection()->$method(...$parameters);
     }
@@ -154,8 +131,6 @@ abstract class Manager implements Factory
 
     /**
      * Get the configuration name.
-     *
-     * @return string
      */
     protected function getConfigName(): string
     {
