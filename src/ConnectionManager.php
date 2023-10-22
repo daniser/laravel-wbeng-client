@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine;
 
+use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
 use TTBooking\WBEngine\DTO\Air\Common\RequestContext;
+use TTBooking\WBEngine\DTO\Air\Enums\RespondType;
 use TTBooking\WBEngine\DTO\Air\FlightFares\Request\Parameters as FaresQuery;
 use TTBooking\WBEngine\DTO\Air\FlightFares\Response as FaresResponse;
 use TTBooking\WBEngine\DTO\Air\SearchFlights\Request\Parameters as SearchQuery;
@@ -28,6 +30,23 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
         return $this->connection()->flightFares($query, $provider, $gds);
     }
 
+    /**
+     * @param  array{
+     *     driver: string,
+     *     uri: string,
+     *     login: string,
+     *     password: string,
+     *     salepoint: int[]|null,
+     *     locale: string,
+     *     respondType: RespondType,
+     *     currency: string,
+     *     id: int,
+     *     provider: string,
+     *     context_id: int|null,
+     * }  $config
+     *
+     * @throws BindingResolutionException
+     */
     protected function createDefaultDriver(array $config, string $connection): ClientInterface
     {
         unset($config['driver']);
