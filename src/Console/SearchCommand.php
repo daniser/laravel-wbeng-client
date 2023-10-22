@@ -10,6 +10,7 @@ use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\Contracts\ClientFactory;
 use TTBooking\WBEngine\DTO\Air\SearchFlights\Response;
+
 use function Laravel\Prompts\{info, note, spin, table, text};
 use function TTBooking\WBEngine\{data_get, fly};
 

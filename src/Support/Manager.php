@@ -13,6 +13,7 @@ use TTBooking\WBEngine\Contracts\Factory;
 
 /**
  * @template TConnection of object
+ *
  * @implements Factory<TConnection>
  */
 abstract class Manager implements Factory
@@ -70,9 +71,7 @@ abstract class Manager implements Factory
     /**
      * Dynamically call the default connection instance.
      *
-     * @param  string  $method
      * @param  array<mixed>  $parameters
-     * @return mixed
      */
     public function __call(string $method, array $parameters): mixed
     {
@@ -82,8 +81,6 @@ abstract class Manager implements Factory
     /**
      * Register a custom driver creator Closure.
      *
-     * @param  string  $driver
-     * @param  Closure  $callback
      * @return $this
      */
     public function extend(string $driver, Closure $callback): static
@@ -96,7 +93,6 @@ abstract class Manager implements Factory
     /**
      * Resolve the given connection.
      *
-     * @param  string  $name
      * @return TConnection
      *
      * @throws InvalidArgumentException
@@ -140,7 +136,6 @@ abstract class Manager implements Factory
     /**
      * Get the cache connection configuration.
      *
-     * @param  string  $name
      * @return array{driver: string}
      */
     protected function getConfig(string $name): array

@@ -14,7 +14,6 @@ interface Factory
     /**
      * Get a connection instance.
      *
-     * @param  string|null  $name
      * @return TConnection
      *
      * @throws InvalidArgumentException

@@ -16,10 +16,7 @@ function wbeng(string $connection = null): ClientInterface
 /**
  * Get an item from an array or object using "dot" notation.
  *
- * @param  mixed  $target
  * @param  string|array<string|int|null>|int|null  $key
- * @param  mixed  $default
- * @return mixed
  */
 function data_get(mixed $target, string|array|int|null $key, mixed $default = null): mixed
 {
