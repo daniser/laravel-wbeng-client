@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine\Console;
 
 use Illuminate\Console\Command;
-use Illuminate\Support\Arr;
+use Illuminate\Support\Collection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
@@ -56,7 +56,7 @@ class SearchCommand extends Command
             date: $this->getDepartureDate(),
         );
 
-        static::status($result->context);
+        static::displayStatus($result->context);
 
         if (! $result->flightGroups) {
             warning('No flights found.');
@@ -64,10 +64,7 @@ class SearchCommand extends Command
             return static::FAILURE;
         }
 
-        $rows = static::collectData($result);
-        $flightId = windows_os() || $this->option('table')
-            ? static::displayTable($rows)
-            : static::displaySelect($rows);
+        $flightId = $this->displayFlights($result->flightGroups);
 
         info(gettype($flightId));
         info((string) $flightId);
@@ -83,7 +80,7 @@ class SearchCommand extends Command
     protected function getDepartureLocation(callable $prompter = null): string
     {
         /** @var string */
-        return $this->argument('from') ?? static::location(
+        return $this->argument('from') ?? static::getLocation(
             label: 'From',
             prompter: $prompter,
             placeholder: 'MOW|Moscow',
@@ -97,12 +94,33 @@ class SearchCommand extends Command
     protected function getArrivalLocation(callable $prompter = null): string
     {
         /** @var string */
-        return $this->argument('to') ?? static::location(
+        return $this->argument('to') ?? static::getLocation(
             label: 'To',
             prompter: $prompter,
             placeholder: 'LED|St. Petersburg',
             hint: 'Arrival location',
         );
+    }
+
+    /**
+     * @param  null|callable(string): array<string, string>  $prompter
+     */
+    protected static function getLocation(string $label, callable $prompter = null, string $placeholder = '', string $hint = ''): string
+    {
+        $parts = explode('|', $placeholder);
+
+        return $prompter
+            ? (string) search(
+                label: $label,
+                options: $prompter(...),
+                placeholder: $parts[1] ?? $parts[0],
+                hint: $hint,
+            ) : text(
+                label: $label,
+                placeholder: $parts[0],
+                required: true,
+                hint: $hint.' code',
+            );
     }
 
     protected function getDepartureDate(): string
@@ -126,7 +144,7 @@ class SearchCommand extends Command
         ), 'Searching flights...');
     }
 
-    protected static function status(ResponseContext $context): void
+    protected static function displayStatus(ResponseContext $context): void
     {
         note(sprintf(
             "<question>%s</question>\t\t%s\t\t<comment>%s</comment>\t\t<info>%s</info>",
@@ -138,41 +156,62 @@ class SearchCommand extends Command
     }
 
     /**
-     * @return list<list<string>>
+     * @param  list<Response\FlightGroup>  $flightGroups
      */
-    protected static function collectData(Response $result): array
+    protected function displayFlights(array $flightGroups): int
     {
-        $rows = [];
-        /** @var list<Response\FlightGroup> $flightGroups */
-        $flightGroups = array_values(Arr::sort($result->flightGroups, 'fares.fareTotal'));
-        foreach ($flightGroups as $flightGroup) {
-            $rows[] = [
-                data_get($flightGroup, 'itineraries.^.flights.^.segments.^.dateBegin')->format('H:i'),
-                data_get($flightGroup, 'itineraries.$.flights.$.segments.$.dateEnd')->format('H:i'),
-                $flightGroup->carrier->code.' '.$flightGroup->provider.' '.$flightGroup->gds,
-                data_get($flightGroup, 'itineraries.^.flights.^.segments.^.locationBegin.code').'-'.
-                data_get($flightGroup, 'itineraries.$.flights.$.segments.$.locationEnd.code'),
-                data_get($flightGroup, 'itineraries.0.flights.0.segments.0.carrier.code').'-'.
-                data_get($flightGroup, 'itineraries.0.flights.0.segments.0.flightNumber'),
-                $flightGroup->fares->fareTotal,
-            ];
-        }
+        $rows = static::collectData($flightGroups);
 
-        return $rows;
+        return windows_os() || $this->option('table')
+            ? static::displayTable($rows)
+            : static::displaySelect($rows);
     }
 
     /**
-     * @param  list<list<string>>  $rows
+     * @param  list<Response\FlightGroup>  $flightGroups
+     * @return Collection<int, list<string>>
      */
-    protected static function displayTable(array $rows): int
+    protected static function collectData(array $flightGroups): Collection
     {
-        $rows = Arr::map($rows, static function (array $row, int $id) {
-            $fareTotal = array_pop($row);
+        return collect($flightGroups)->sortBy('fares.fareTotal')->values()->map(self::extractRow(...));
+    }
 
-            return [self::rcell($id + 1), ...$row, self::rcell($fareTotal)];
-        });
+    /**
+     * @return list<string>
+     */
+    private static function extractRow(Response\FlightGroup $flightGroup): array
+    {
+        return [
 
-        table(['#', 'Departure', 'Arrival', 'Carrier/GDS', 'Route', 'Flight', 'Fare total'], $rows);
+            /** @phpstan-ignore-next-line */
+            (string) data_get($flightGroup, 'itineraries.^.flights.^.segments.^.dateBegin')->format('H:i'),
+
+            /** @phpstan-ignore-next-line */
+            (string) data_get($flightGroup, 'itineraries.$.flights.$.segments.$.dateEnd')->format('H:i'),
+
+            $flightGroup->carrier->code.' '.$flightGroup->provider.' '.$flightGroup->gds,
+
+            data_get($flightGroup, 'itineraries.^.flights.^.segments.^.locationBegin.code').'-'.
+            data_get($flightGroup, 'itineraries.$.flights.$.segments.$.locationEnd.code'),
+
+            data_get($flightGroup, 'itineraries.0.flights.0.segments.0.carrier.code').'-'.
+            data_get($flightGroup, 'itineraries.0.flights.0.segments.0.flightNumber'),
+
+            (string) $flightGroup->fares->fareTotal,
+
+        ];
+    }
+
+    /**
+     * @param  Collection<int, list<string>>  $rows
+     */
+    protected static function displayTable(Collection $rows): int
+    {
+        table(
+            ['#', 'Departure', 'Arrival', 'Carrier/GDS', 'Route', 'Flight', 'Fare total'],
+            /** @phpstan-ignore-next-line */
+            $rows->map(self::formatTableRow(...))
+        );
 
         return (int) text(
             label: 'Enter flight #',
@@ -186,45 +225,40 @@ class SearchCommand extends Command
     }
 
     /**
-     * @param  list<list<string>>  $rows
+     * @param  non-empty-list<string>  $row
+     * @return list<string|TableCell>
      */
-    protected static function displaySelect(array $rows): int
+    private static function formatTableRow(array $row, int $id): array
     {
-        $rows = Arr::mapWithKeys($rows, static function (array $row, int $id) {
-            return [$id + 1 => sprintf('%s  %s  %-13s  %s  %-7s  %7d', ...$row)];
-        });
+        $fareTotal = array_pop($row);
 
+        return [self::alignRight($id + 1), ...$row, self::alignRight($fareTotal)];
+    }
+
+    private static function alignRight(string|int $value): TableCell
+    {
+        return new TableCell((string) $value, ['style' => new TableCellStyle(['align' => 'right'])]);
+    }
+
+    /**
+     * @param  Collection<int, list<string>>  $rows
+     */
+    protected static function displaySelect(Collection $rows): int
+    {
         return (int) select(
             label: 'Select flight',
-            options: $rows,
+            options: $rows->mapWithKeys(self::formatSelectRow(...)),
             scroll: 25,
             hint: 'Choose flight to inspect its details',
         );
     }
 
     /**
-     * @param  null|callable(string): array<string, string>  $prompter
+     * @param  list<string>  $row
+     * @return array<string>
      */
-    protected static function location(string $label, callable $prompter = null, string $placeholder = '', string $hint = ''): string
+    private static function formatSelectRow(array $row, int $id): array
     {
-        $parts = explode('|', $placeholder);
-
-        return $prompter
-            ? (string) search(
-                label: $label,
-                options: $prompter(...),
-                placeholder: $parts[1] ?? $parts[0],
-                hint: $hint,
-            ) : text(
-                label: $label,
-                placeholder: $parts[0],
-                required: true,
-                hint: $hint.' code',
-            );
-    }
-
-    private static function rcell(string|int $value): TableCell
-    {
-        return new TableCell((string) $value, ['style' => new TableCellStyle(['align' => 'right'])]);
+        return [$id + 1 => sprintf('%s  %s  %-13s  %s  %-7s  %7d', ...$row)];
     }
 }
