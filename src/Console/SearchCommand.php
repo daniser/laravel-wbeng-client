@@ -191,7 +191,7 @@ class SearchCommand extends Command
     protected static function displaySelect(array $rows): int
     {
         $rows = Arr::mapWithKeys($rows, static function (array $row, int $id) {
-            return [$id + 1 => sprintf('%s  %s  %-11s  %s  %-7s  %7d', ...$row)];
+            return [$id + 1 => sprintf('%s  %s  %-13s  %s  %-7s  %7d', ...$row)];
         });
 
         return (int) select(
