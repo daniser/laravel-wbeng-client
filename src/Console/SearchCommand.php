@@ -12,7 +12,7 @@ use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\Contracts\ClientFactory;
 use TTBooking\WBEngine\DTO\Air\SearchFlights\Response;
 
-use function Laravel\Prompts\{info, note, select, spin, table, text, warning};
+use function Laravel\Prompts\{info, note, search, select, spin, table, text, warning};
 use function TTBooking\WBEngine\{data_get, fly};
 
 #[AsCommand(
@@ -45,19 +45,38 @@ class SearchCommand extends Command
      */
     public function handle(ClientFactory $clientFactory): int
     {
-        $origin = $this->argument('from') ?? text(
-            label: 'From',
-            placeholder: 'MOW',
-            required: true,
-            hint: 'Departure location code',
-        );
+        /** @var null|callable(string): array<string, string> $prompter */
+        $prompter = config('wbeng-client.iata_location_prompter');
 
-        $destination = $this->argument('to') ?? text(
-            label: 'To',
-            placeholder: 'LED',
-            required: true,
-            hint: 'Arrival location code',
-        );
+        if ($prompter) {
+            $origin = $this->argument('from') ?? search(
+                label: 'From',
+                options: $prompter(...),
+                placeholder: 'Moscow',
+                hint: 'Departure location code',
+            );
+
+            $destination = $this->argument('to') ?? search(
+                label: 'To',
+                options: $prompter(...),
+                placeholder: 'St. Petersburg',
+                hint: 'Arrival location code',
+            );
+        } else {
+            $origin = $this->argument('from') ?? text(
+                label: 'From',
+                placeholder: 'MOW',
+                required: true,
+                hint: 'Departure location code',
+            );
+
+            $destination = $this->argument('to') ?? text(
+                label: 'To',
+                placeholder: 'LED',
+                required: true,
+                hint: 'Arrival location code',
+            );
+        }
 
         $date = $this->argument('date') ?? text(
             label: 'Date',
