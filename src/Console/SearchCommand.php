@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine\Console;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Arr;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
@@ -77,7 +78,8 @@ class SearchCommand extends Command
         ));
 
         $rows = [];
-        foreach ($result->flightGroups as $flightGroup) {
+        $flightGroups = Arr::sort($result->flightGroups, 'fares.fareTotal');
+        foreach ($flightGroups as $flightGroup) {
             $rows[] = [
                 data_get($flightGroup, 'itineraries.^.flights.^.segments.^.dateBegin')->format('H:i'),
                 data_get($flightGroup, 'itineraries.$.flights.$.segments.$.dateEnd')->format('H:i'),
