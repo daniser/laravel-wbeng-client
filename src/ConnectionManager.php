@@ -7,12 +7,12 @@ namespace TTBooking\WBEngine;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
 use TTBooking\WBEngine\DTO\Air\Common\Request\Context;
-use TTBooking\WBEngine\DTO\Air\Common\Request\Parameters as CommonQuery;
-use TTBooking\WBEngine\DTO\Air\CreateBooking\Request\Parameters as BookingQuery;
+use TTBooking\WBEngine\DTO\Air\Common\Request\Parameters as CommonParams;
+use TTBooking\WBEngine\DTO\Air\CreateBooking\Request\Parameters as BookingParams;
 use TTBooking\WBEngine\DTO\Air\CreateBooking\Response as BookingResponse;
 use TTBooking\WBEngine\DTO\Air\Enums\RespondType;
 use TTBooking\WBEngine\DTO\Air\FlightFares\Response as FaresResponse;
-use TTBooking\WBEngine\DTO\Air\SearchFlights\Request\Parameters as SearchQuery;
+use TTBooking\WBEngine\DTO\Air\SearchFlights\Request\Parameters as SearchParams;
 use TTBooking\WBEngine\DTO\Air\SearchFlights\Response as SearchResponse;
 use TTBooking\WBEngine\DTO\Air\SelectFlight\Response as SelectResponse;
 
@@ -23,24 +23,24 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
 {
     protected string $configName = 'wbeng-client';
 
-    public function searchFlights(SearchQuery $query): SearchResponse
+    public function searchFlights(SearchParams $parameters): SearchResponse
     {
-        return $this->connection()->searchFlights($query);
+        return $this->connection()->searchFlights($parameters);
     }
 
-    public function selectFlight(CommonQuery $query): SelectResponse
+    public function selectFlight(CommonParams $parameters): SelectResponse
     {
-        return $this->connection()->selectFlight($query);
+        return $this->connection()->selectFlight($parameters);
     }
 
-    public function createBooking(BookingQuery $query): BookingResponse
+    public function createBooking(BookingParams $parameters): BookingResponse
     {
-        return $this->connection()->createBooking($query);
+        return $this->connection()->createBooking($parameters);
     }
 
-    public function flightFares(CommonQuery $query, string $provider, string $gds): FaresResponse
+    public function flightFares(CommonParams $parameters, string $provider, string $gds): FaresResponse
     {
-        return $this->connection()->flightFares($query, $provider, $gds);
+        return $this->connection()->flightFares($parameters, $provider, $gds);
     }
 
     /**
