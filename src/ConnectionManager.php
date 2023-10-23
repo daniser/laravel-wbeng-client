@@ -6,12 +6,15 @@ namespace TTBooking\WBEngine;
 
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
-use TTBooking\WBEngine\DTO\Air\Common\RequestContext;
+use TTBooking\WBEngine\DTO\Air\Common\Request\Context;
+use TTBooking\WBEngine\DTO\Air\Common\Request\Parameters as CommonQuery;
+use TTBooking\WBEngine\DTO\Air\CreateBooking\Request\Parameters as BookingQuery;
+use TTBooking\WBEngine\DTO\Air\CreateBooking\Response as BookingResponse;
 use TTBooking\WBEngine\DTO\Air\Enums\RespondType;
-use TTBooking\WBEngine\DTO\Air\FlightFares\Request\Parameters as FaresQuery;
 use TTBooking\WBEngine\DTO\Air\FlightFares\Response as FaresResponse;
 use TTBooking\WBEngine\DTO\Air\SearchFlights\Request\Parameters as SearchQuery;
 use TTBooking\WBEngine\DTO\Air\SearchFlights\Response as SearchResponse;
+use TTBooking\WBEngine\DTO\Air\SelectFlight\Response as SelectResponse;
 
 /**
  * @extends Support\Manager<ClientInterface>
@@ -25,7 +28,17 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
         return $this->connection()->searchFlights($query);
     }
 
-    public function flightFares(FaresQuery $query, string $provider, string $gds): FaresResponse
+    public function selectFlight(CommonQuery $query): SelectResponse
+    {
+        return $this->connection()->selectFlight($query);
+    }
+
+    public function createBooking(BookingQuery $query): BookingResponse
+    {
+        return $this->connection()->createBooking($query);
+    }
+
+    public function flightFares(CommonQuery $query, string $provider, string $gds): FaresResponse
     {
         return $this->connection()->flightFares($query, $provider, $gds);
     }
@@ -53,7 +66,7 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
 
         return $this->container->make(Client::class, [
             'baseUri' => Arr::pull($config, 'uri'),
-            'context' => new RequestContext(...$config),
+            'context' => new Context(...$config),
         ]);
     }
 }
