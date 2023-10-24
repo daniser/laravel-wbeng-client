@@ -1,6 +1,6 @@
 <?php
 
-use TTBooking\WBEngine\DTO\Air\Enums\RespondType;
+use TTBooking\WBEngine\DTO\Enums\RespondType;
 
 return [
 

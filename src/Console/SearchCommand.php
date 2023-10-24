@@ -10,8 +10,8 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\Contracts\ClientFactory;
-use TTBooking\WBEngine\DTO\Air\Common\Response\Context;
-use TTBooking\WBEngine\DTO\Air\SearchFlights\Response;
+use TTBooking\WBEngine\DTO\Common\Response\Context;
+use TTBooking\WBEngine\DTO\SearchFlights\Response;
 
 use function Laravel\Prompts\{info, note, search, select, spin, table, text, warning};
 use function TTBooking\WBEngine\{data_get, fly};
