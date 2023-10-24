@@ -48,6 +48,8 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
 
     /**
      * Get the services provided by the provider.
+     *
+     * @return list<string>
      */
     public function provides(): array
     {
