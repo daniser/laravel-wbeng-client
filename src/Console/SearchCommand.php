@@ -14,7 +14,8 @@ use TTBooking\WBEngine\DTO\Common\Response\Context;
 use TTBooking\WBEngine\DTO\SearchFlights\Response;
 
 use function Laravel\Prompts\{info, note, search, select, spin, table, text, warning};
-use function TTBooking\WBEngine\{data_get, fly};
+use function TTBooking\WBEngine\data_get;
+use function TTBooking\WBEngine\Functional\do\fly;
 
 #[AsCommand(
     name: 'wbeng:search',
@@ -140,7 +141,7 @@ class SearchCommand extends Command
         $connection = $this->option('connection');
 
         return spin(fn (): Response => $clientFactory->connection($connection)->searchFlights(
-            fly()->from($origin)->to($destination)->at($date)
+            fly()->from($origin)->to($destination)->on($date)
         ), 'Searching flights...');
     }
 
