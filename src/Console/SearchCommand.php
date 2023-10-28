@@ -141,7 +141,7 @@ class SearchCommand extends Command
         $connection = $this->option('connection');
 
         return spin(fn (): Response => $clientFactory->connection($connection)->searchFlights(
-            fly()->from($origin)->to($destination)->on($date)
+            fly()->from($origin)->to($destination)->on($date)->sortByPrice()
         ), 'Searching flights...');
     }
 
@@ -174,7 +174,7 @@ class SearchCommand extends Command
      */
     protected static function collectData(array $flightGroups): Collection
     {
-        return collect($flightGroups)->sortBy('fares.fareTotal')->values()->map(self::extractRow(...));
+        return collect($flightGroups)->map(self::extractRow(...));
     }
 
     /**

@@ -14,6 +14,7 @@ use TTBooking\WBEngine\DTO\Enums\RespondType;
 use TTBooking\WBEngine\DTO\FlightFares\Response as FaresResponse;
 use TTBooking\WBEngine\DTO\SearchFlights\Request\Parameters as SearchParams;
 use TTBooking\WBEngine\DTO\SearchFlights\Response as SearchResponse;
+use TTBooking\WBEngine\DTO\SelectFlight\Request\Parameters as SelectParams;
 use TTBooking\WBEngine\DTO\SelectFlight\Response as SelectResponse;
 
 /**
@@ -28,17 +29,17 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
         return $this->connection()->searchFlights($parameters);
     }
 
-    public function selectFlight(CommonParams $parameters): SelectResponse
+    public function selectFlight(SelectParams $parameters, string $provider = null, string $gds = null): SelectResponse
     {
         return $this->connection()->selectFlight($parameters);
     }
 
-    public function createBooking(BookingParams $parameters): BookingResponse
+    public function createBooking(BookingParams $parameters, string $provider = null, string $gds = null): BookingResponse
     {
         return $this->connection()->createBooking($parameters);
     }
 
-    public function flightFares(CommonParams $parameters, string $provider, string $gds): FaresResponse
+    public function flightFares(CommonParams $parameters, string $provider = null, string $gds = null): FaresResponse
     {
         return $this->connection()->flightFares($parameters, $provider, $gds);
     }
