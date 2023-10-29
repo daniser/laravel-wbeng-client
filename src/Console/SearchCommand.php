@@ -11,6 +11,7 @@ use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\Contracts\ClientFactory;
 use TTBooking\WBEngine\DTO\Common\Response\Context;
+use TTBooking\WBEngine\DTO\Common\Response\Message;
 use TTBooking\WBEngine\DTO\SearchFlights\Response;
 
 use function Laravel\Prompts\{info, note, search, select, spin, table, text, warning};
@@ -58,6 +59,7 @@ class SearchCommand extends Command
         );
 
         static::displayStatus($result->context);
+        static::displayMessages($result->messages);
 
         if (! $result->flightGroups) {
             warning('No flights found.');
@@ -154,6 +156,22 @@ class SearchCommand extends Command
             $context->profile,
             implode(',', $context->provider),
         ));
+    }
+
+    /**
+     * @param  list<Message>  $messages
+     */
+    protected static function displayMessages(array $messages): void
+    {
+        foreach ($messages as $message) {
+            note(sprintf(
+                '<%s>%-7s</> [%s] %s',
+                $message->type->style(),
+                $message->code ?? $message->type->value,
+                $message->source->value,
+                $message->message,
+            ));
+        }
     }
 
     /**
