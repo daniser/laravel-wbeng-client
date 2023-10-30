@@ -8,14 +8,13 @@ use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
 use TTBooking\WBEngine\DTO\Common\Request\Context;
 use TTBooking\WBEngine\DTO\Common\Request\Parameters as CommonParams;
+use TTBooking\WBEngine\DTO\Common\Response;
 use TTBooking\WBEngine\DTO\CreateBooking\Request\Parameters as BookingParams;
 use TTBooking\WBEngine\DTO\CreateBooking\Response as BookingResponse;
 use TTBooking\WBEngine\DTO\Enums\RespondType;
 use TTBooking\WBEngine\DTO\FlightFares\Response as FaresResponse;
 use TTBooking\WBEngine\DTO\SearchFlights\Request\Parameters as SearchParams;
-use TTBooking\WBEngine\DTO\SearchFlights\Response as SearchResponse;
 use TTBooking\WBEngine\DTO\SelectFlight\Request\Parameters as SelectParams;
-use TTBooking\WBEngine\DTO\SelectFlight\Response as SelectResponse;
 
 /**
  * @extends Support\Manager<ClientInterface>
@@ -24,12 +23,12 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
 {
     protected string $configName = 'wbeng-client';
 
-    public function searchFlights(SearchParams $parameters): SearchResponse
+    public function searchFlights(SearchParams $parameters): Response
     {
         return $this->connection()->searchFlights($parameters);
     }
 
-    public function selectFlight(SelectParams $parameters, string $provider = null, string $gds = null): SelectResponse
+    public function selectFlight(SelectParams $parameters, string $provider = null, string $gds = null): Response
     {
         return $this->connection()->selectFlight($parameters);
     }

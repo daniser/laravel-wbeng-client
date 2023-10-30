@@ -10,13 +10,11 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\Contracts\ClientFactory;
-use TTBooking\WBEngine\DTO\Common\Response\Context;
-use TTBooking\WBEngine\DTO\Common\Response\Message;
-use TTBooking\WBEngine\DTO\SearchFlights\Response;
+use TTBooking\WBEngine\DTO\Common\Response;
 
-use function Laravel\Prompts\{info, note, search, select, spin, table, text, warning};
+use function Laravel\Prompts\{note, search, select, spin, table, text, warning};
 use function TTBooking\WBEngine\data_get;
-use function TTBooking\WBEngine\Functional\do\fly;
+use function TTBooking\WBEngine\Functional\do\{choose, fly};
 
 #[AsCommand(
     name: 'wbeng:search',
@@ -51,28 +49,41 @@ class SearchCommand extends Command
         /** @var null|callable(string): array<string, string> $prompter */
         $prompter = config('wbeng-client.iata_location_prompter');
 
-        $result = $this->searchFlights(
+        $searchResult = $this->searchFlights(
             clientFactory: $clientFactory,
             origin: $this->getDepartureLocation($prompter),
             destination: $this->getArrivalLocation($prompter),
             date: $this->getDepartureDate(),
         );
 
-        static::displayStatus($result->context);
-        static::displayMessages($result->messages);
+        static::displayStatus($searchResult->context);
+        static::displayMessages($searchResult->messages);
 
-        if (! $result->flightGroups) {
+        if (! $searchResult->flightGroups) {
             warning('No flights found.');
 
             return static::FAILURE;
         }
 
-        $flightId = $this->displayFlights($result->flightGroups);
+        $flightGroupId = $this->displayFlights($searchResult->flightGroups);
 
-        info(gettype($flightId));
-        info((string) $flightId);
+        $selectResult = $this->selectFlight(
+            clientFactory: $clientFactory,
+            searchResponse: $searchResult,
+            flightGroupId: $flightGroupId,
+            flightId: 0,
+        );
 
-        info('Search successfully finished.');
+        static::displayStatus($selectResult->context);
+        static::displayMessages($selectResult->messages);
+
+        if (! $selectResult->flightGroups) {
+            warning('No flights found.');
+
+            return static::FAILURE;
+        }
+
+        $this->displayFlights($selectResult->flightGroups);
 
         return static::SUCCESS;
     }
@@ -147,7 +158,17 @@ class SearchCommand extends Command
         ), 'Searching flights...');
     }
 
-    protected static function displayStatus(Context $context): void
+    protected function selectFlight(ClientFactory $clientFactory, Response $searchResponse, int $flightGroupId, int $flightId): Response
+    {
+        /** @var string $connection */
+        $connection = $this->option('connection');
+
+        return spin(fn (): Response => $clientFactory->connection($connection)->selectFlight(
+            choose()->fromSearchResponse($searchResponse, $flightGroupId, $flightId)
+        ), 'Checking availability...');
+    }
+
+    protected static function displayStatus(Response\Context $context): void
     {
         note(sprintf(
             "<question>%s</question>\t\t%s\t\t<comment>%s</comment>\t\t<info>%s</info>",
@@ -159,7 +180,7 @@ class SearchCommand extends Command
     }
 
     /**
-     * @param  list<Message>  $messages
+     * @param  list<Response\Message>  $messages
      */
     protected static function displayMessages(array $messages): void
     {
@@ -232,7 +253,7 @@ class SearchCommand extends Command
             $rows->map(self::formatTableRow(...))
         );
 
-        return (int) text(
+        return -1 + (int) text(
             label: 'Enter flight #',
             required: true,
             validate: static fn (string $value) => filter_var($value, FILTER_VALIDATE_INT, ['options' => [
@@ -264,7 +285,7 @@ class SearchCommand extends Command
      */
     protected static function displaySelect(Collection $rows): int
     {
-        return (int) select(
+        return -1 + (int) select(
             label: 'Select flight',
             options: $rows->mapWithKeys(self::formatSelectRow(...)),
             scroll: 25,
