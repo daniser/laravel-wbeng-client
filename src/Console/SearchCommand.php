@@ -154,7 +154,7 @@ class SearchCommand extends Command
         $connection = $this->option('connection');
 
         return spin(fn (): Response => $clientFactory->connection($connection)->searchFlights(
-            fly()->from($origin)->to($destination)->on($date)->sortByPrice()
+            fly()->from($origin)->to($destination)->on($date)//->sortByPrice()
         ), 'Searching flights...');
     }
 
@@ -175,7 +175,7 @@ class SearchCommand extends Command
             'WBENG '.$context->version,
             $context->environment,
             $context->profile,
-            implode(',', $context->provider),
+            implode(',', $context->provider ?? array_keys($context->executionTimeReport)),
         ));
     }
 
