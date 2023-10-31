@@ -15,6 +15,7 @@ use TTBooking\WBEngine\DTO\Enums\RespondType;
 use TTBooking\WBEngine\DTO\FlightFares\Response as FaresResponse;
 use TTBooking\WBEngine\DTO\SearchFlights\Request\Parameters as SearchParams;
 use TTBooking\WBEngine\DTO\SelectFlight\Request\Parameters as SelectParams;
+use UnexpectedValueException;
 
 /**
  * @extends Support\Manager<ClientInterface>
@@ -49,13 +50,14 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
      *     uri: string,
      *     login: string,
      *     password: string,
-     *     salepoint: int[]|null,
+     *     provider: string,
+     *     salePoint: string|null,
+     *     currency: string,
      *     locale: string,
      *     respondType: RespondType,
-     *     currency: string,
      *     id: int,
-     *     provider: string,
      *     context_id: int|null,
+     *     serializer: 'symfony'|'jms'|'default'|null
      * }  $config
      *
      * @throws BindingResolutionException
@@ -64,9 +66,18 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
     {
         unset($config['driver']);
 
+        /** @var string|null $serializer */
+        $serializer = Arr::pull($config, 'serializer');
+
         return $this->container->make(Client::class, [
             'baseUri' => Arr::pull($config, 'uri'),
             'context' => new Context(...$config),
+            'serializer' => match ($serializer) {
+                'symfony' => SerializerFactory::createSymfonySerializer(),
+                'jms' => SerializerFactory::createJMSSerializer(),
+                'default', null => null,
+                default => throw new UnexpectedValueException("Invalid serializer [$serializer]."),
+            },
         ]);
     }
 }
