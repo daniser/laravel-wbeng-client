@@ -23,7 +23,7 @@ return [
             'currency' => env('WB_CURRENCY', 'RUB'),
             'locale' => env('WB_LOCALE', 'ru'),
             'respondType' => RespondType::JSON,
-            'legacy' => env('WB_LEGACY', false),
+            'legacy' => env('WB_LEGACY', true),
             'serializer' => env('WB_SERIALIZER'),
         ],
 

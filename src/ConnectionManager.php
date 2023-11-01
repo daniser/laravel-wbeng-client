@@ -15,7 +15,6 @@ use TTBooking\WBEngine\DTO\Enums\RespondType;
 use TTBooking\WBEngine\DTO\FlightFares\Response as FaresResponse;
 use TTBooking\WBEngine\DTO\SearchFlights\Request\Parameters as SearchParams;
 use TTBooking\WBEngine\DTO\SelectFlight\Request\Parameters as SelectParams;
-use UnexpectedValueException;
 
 /**
  * @extends Support\Manager<ClientInterface>
@@ -77,12 +76,7 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
             'baseUri' => Arr::pull($config, 'uri'),
             'context' => new Context(...$config),
             'legacy' => $legacy,
-            'serializer' => match ($serializer) {
-                'symfony' => SerializerFactory::createSymfonySerializer($legacy),
-                'jms' => SerializerFactory::createJMSSerializer($legacy),
-                'default', null => null,
-                default => throw new UnexpectedValueException("Invalid serializer [$serializer]."),
-            },
+            'serializer' => SerializerFactory::createSerializer($serializer, $legacy),
         ]);
     }
 }
