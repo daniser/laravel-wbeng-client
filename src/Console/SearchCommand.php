@@ -175,7 +175,7 @@ class SearchCommand extends Command
             'WBENG '.$context->version,
             $context->environment,
             $context->profile,
-            implode(',', $context->provider ?? array_keys($context->executionTimeReport)),
+            implode(',', isset($context->provider) ? (array) $context->provider : array_keys($context->executionTimeReport)),
         ));
     }
 
@@ -186,10 +186,10 @@ class SearchCommand extends Command
     {
         foreach ($messages as $message) {
             note(sprintf(
-                '<%s>%-7s</> [%s] %s',
+                '<%s>%s</>%s %s',
                 $message->type->style(),
-                $message->code ?? $message->type->value,
-                $message->source->value,
+                str_pad(isset($message->code) ? (string) $message->code : $message->type->value, 7, ' ', STR_PAD_BOTH),
+                isset($message->source->value) ? " [{$message->source->value}]" : '',
                 $message->message,
             ));
         }
