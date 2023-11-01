@@ -57,6 +57,7 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
      *     respondType: RespondType,
      *     id: int,
      *     context_id: int|null,
+     *     legacy: bool,
      *     serializer: 'symfony'|'jms'|'default'|null
      * }  $config
      *
@@ -66,15 +67,19 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
     {
         unset($config['driver']);
 
+        /** @var bool $legacy */
+        $legacy = Arr::pull($config, 'legacy');
+
         /** @var string|null $serializer */
         $serializer = Arr::pull($config, 'serializer');
 
         return $this->container->make(Client::class, [
             'baseUri' => Arr::pull($config, 'uri'),
             'context' => new Context(...$config),
+            'legacy' => $legacy,
             'serializer' => match ($serializer) {
-                'symfony' => SerializerFactory::createSymfonySerializer(),
-                'jms' => SerializerFactory::createJMSSerializer(),
+                'symfony' => SerializerFactory::createSymfonySerializer($legacy),
+                'jms' => SerializerFactory::createJMSSerializer($legacy),
                 'default', null => null,
                 default => throw new UnexpectedValueException("Invalid serializer [$serializer]."),
             },
