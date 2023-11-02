@@ -8,7 +8,7 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use TTBooking\WBEngine\Facades\WBEngine;
 
-function wbeng(string $connection = null): Contracts\Client
+function wbeng(string $connection = null): Client
 {
     return WBEngine::connection($connection);
 }

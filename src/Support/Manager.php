@@ -93,7 +93,7 @@ abstract class Manager implements Factory
     /**
      * Resolve the given connection.
      *
-     * @return TConnection
+     * @phpstan-return TConnection
      *
      * @throws InvalidArgumentException
      */
@@ -118,7 +118,7 @@ abstract class Manager implements Factory
      * Call a custom driver creator.
      *
      * @param  array{driver: string}  $config
-     * @return TConnection
+     * @phpstan-return TConnection
      */
     protected function callCustomCreator(array $config): object
     {

@@ -6,7 +6,7 @@ namespace TTBooking\WBEngine\Facades;
 
 use Http\Promise\Promise;
 use Illuminate\Support\Facades\Facade;
-use TTBooking\WBEngine\Contracts\Client;
+use TTBooking\WBEngine\Client;
 use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
 

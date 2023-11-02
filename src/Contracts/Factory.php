@@ -14,7 +14,7 @@ interface Factory
     /**
      * Get a connection instance.
      *
-     * @return TConnection
+     * @phpstan-return TConnection
      *
      * @throws InvalidArgumentException
      */

@@ -11,9 +11,9 @@ use TTBooking\WBEngine\DTO\Common\Query\Context;
 use TTBooking\WBEngine\DTO\Enums\RespondType;
 
 /**
- * @extends Support\Manager<Contracts\Client>
+ * @extends Support\Manager<Client>
  */
-class ConnectionManager extends Support\Manager implements Contracts\Client, Contracts\ClientFactory
+class ConnectionManager extends Support\Manager implements AsyncClientInterface, ClientInterface, Contracts\ClientFactory
 {
     protected string $configName = 'wbeng-client';
 
@@ -46,7 +46,7 @@ class ConnectionManager extends Support\Manager implements Contracts\Client, Con
      *
      * @throws BindingResolutionException
      */
-    protected function createDefaultDriver(array $config, string $connection): ClientInterface
+    protected function createDefaultDriver(array $config, string $connection): Client
     {
         unset($config['driver']);
 
