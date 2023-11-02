@@ -10,7 +10,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\Contracts\ClientFactory;
-use TTBooking\WBEngine\DTO\Common\Response;
+use TTBooking\WBEngine\DTO\Common\Result;
 
 use function Laravel\Prompts\{note, search, select, spin, table, text, warning};
 use function TTBooking\WBEngine\data_get;
@@ -148,27 +148,27 @@ class SearchCommand extends Command
         );
     }
 
-    protected function searchFlights(ClientFactory $clientFactory, string $origin, string $destination, string $date): Response
+    protected function searchFlights(ClientFactory $clientFactory, string $origin, string $destination, string $date): Result
     {
         /** @var string $connection */
         $connection = $this->option('connection');
 
-        return spin(fn (): Response => $clientFactory->connection($connection)->searchFlights(
+        return spin(fn (): Result => $clientFactory->connection($connection)->query(
             fly()->from($origin)->to($destination)->on($date)//->sortByPrice()
         ), 'Searching flights...');
     }
 
-    protected function selectFlight(ClientFactory $clientFactory, Response $searchResponse, int $flightGroupId, int $flightId): Response
+    protected function selectFlight(ClientFactory $clientFactory, Result $searchResponse, int $flightGroupId, int $flightId): Result
     {
         /** @var string $connection */
         $connection = $this->option('connection');
 
-        return spin(fn (): Response => $clientFactory->connection($connection)->selectFlight(
-            choose()->fromSearchResponse($searchResponse, $flightGroupId, $flightId)
+        return spin(fn (): Result => $clientFactory->connection($connection)->query(
+            choose()->fromSearchResult($searchResponse, $flightGroupId, $flightId)
         ), 'Checking availability...');
     }
 
-    protected static function displayStatus(Response\Context $context): void
+    protected static function displayStatus(Result\Context $context): void
     {
         note(sprintf(
             "<question>%s</question>\t\t%s\t\t<comment>%s</comment>\t\t<info>%s</info>",
@@ -180,7 +180,7 @@ class SearchCommand extends Command
     }
 
     /**
-     * @param  list<Response\Message>  $messages
+     * @param  list<Result\Message>  $messages
      */
     protected static function displayMessages(array $messages): void
     {
@@ -196,7 +196,7 @@ class SearchCommand extends Command
     }
 
     /**
-     * @param  list<Response\FlightGroup>  $flightGroups
+     * @param  list<Result\FlightGroup>  $flightGroups
      */
     protected function displayFlights(array $flightGroups): int
     {
@@ -208,7 +208,7 @@ class SearchCommand extends Command
     }
 
     /**
-     * @param  list<Response\FlightGroup>  $flightGroups
+     * @param  list<Result\FlightGroup>  $flightGroups
      * @return Collection<int, list<string>>
      */
     protected static function collectData(array $flightGroups): Collection
@@ -219,7 +219,7 @@ class SearchCommand extends Command
     /**
      * @return list<string>
      */
-    private static function extractRow(Response\FlightGroup $flightGroup): array
+    private static function extractRow(Result\FlightGroup $flightGroup): array
     {
         return [
 
