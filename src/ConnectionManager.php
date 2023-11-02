@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine;
 
+use Http\Promise\Promise;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
 use TTBooking\WBEngine\DTO\Common\Request\Context;
@@ -17,9 +18,9 @@ use TTBooking\WBEngine\DTO\SearchFlights\Request\Parameters as SearchParams;
 use TTBooking\WBEngine\DTO\SelectFlight\Request\Parameters as SelectParams;
 
 /**
- * @extends Support\Manager<ClientInterface>
+ * @extends Support\Manager<Contracts\Client>
  */
-class ConnectionManager extends Support\Manager implements ClientInterface, Contracts\ClientFactory
+class ConnectionManager extends Support\Manager implements Contracts\Client, Contracts\ClientFactory
 {
     protected string $configName = 'wbeng-client';
 
@@ -41,6 +42,26 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
     public function flightFares(CommonParams $parameters, string $provider = null, string $gds = null): FaresResponse
     {
         return $this->connection()->flightFares($parameters, $provider, $gds);
+    }
+
+    public function searchFlightsAsync(SearchParams $parameters): Promise
+    {
+        return $this->connection()->searchFlightsAsync($parameters);
+    }
+
+    public function selectFlightAsync(SelectParams $parameters, string $provider = null, string $gds = null): Promise
+    {
+        return $this->connection()->selectFlightAsync($parameters);
+    }
+
+    public function createBookingAsync(BookingParams $parameters, string $provider = null, string $gds = null): Promise
+    {
+        return $this->connection()->createBookingAsync($parameters);
+    }
+
+    public function flightFaresAsync(CommonParams $parameters, string $provider = null, string $gds = null): Promise
+    {
+        return $this->connection()->flightFaresAsync($parameters, $provider, $gds);
     }
 
     /**
