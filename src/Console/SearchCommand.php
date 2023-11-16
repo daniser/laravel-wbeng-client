@@ -69,8 +69,9 @@ class SearchCommand extends Command
 
         $selectResult = $this->selectFlight(
             clientFactory: $clientFactory,
-            searchResponse: $searchResult,
+            searchResult: $searchResult,
             flightGroupId: $flightGroupId,
+            itineraryId: 0,
             flightId: 0,
         );
 
@@ -158,13 +159,13 @@ class SearchCommand extends Command
         ), 'Searching flights...');
     }
 
-    protected function selectFlight(ClientFactory $clientFactory, Result $searchResponse, int $flightGroupId, int $flightId): Result
+    protected function selectFlight(ClientFactory $clientFactory, Result $searchResult, int $flightGroupId, int $itineraryId, int $flightId): Result
     {
         /** @var string $connection */
         $connection = $this->option('connection');
 
         return spin(fn (): Result => $clientFactory->connection($connection)->query(
-            choose()->fromSearchResult($searchResponse, $flightGroupId, $flightId)
+            choose()->fromSearchResult($searchResult, $flightGroupId, $itineraryId, $flightId)
         ), 'Checking availability...');
     }
 
