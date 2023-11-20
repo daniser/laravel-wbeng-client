@@ -98,7 +98,7 @@ class SearchCommand extends Command
             flightId: 0,
         );
 
-        static::displayStatus($bookResult->context);
+        $bookResult->context && static::displayStatus($bookResult->context);
         static::displayMessages($bookResult->messages);
 
         return static::SUCCESS;
