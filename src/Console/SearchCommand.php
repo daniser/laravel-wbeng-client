@@ -202,6 +202,15 @@ class SearchCommand extends Command
         );
     }
 
+    protected static function getCustomerPhone(): string
+    {
+        return text(
+            label: 'Customer phone',
+            placeholder: '+79001234567',
+            required: true,
+        );
+    }
+
     protected static function choosePassengerType(): PassengerType
     {
         $type = (string) select(
@@ -263,6 +272,7 @@ class SearchCommand extends Command
     {
         return text(
             label: 'Passenger phone',
+            placeholder: '+79001234567',
             required: true,
         );
     }
@@ -272,9 +282,12 @@ class SearchCommand extends Command
         /** @var string $connection */
         $connection = $this->option('connection');
 
+        /** @var string|null $defaultRegion */
+        $defaultRegion = config('app.locale');
+
         $query = book()
             ->fromSearchResult($searchResult, $flightGroupId, $itineraryId, $flightId)
-            ->customer(static::getCustomerName(), static::getCustomerEmail(), '0', '0', '0')
+            ->customer(static::getCustomerName(), static::getCustomerEmail(), static::getCustomerPhone(), $defaultRegion)
             ->passengers(passenger()
                 ->type(static::choosePassengerType())
                 ->gender(static::choosePassengerGender())
@@ -282,7 +295,7 @@ class SearchCommand extends Command
                 ->firstName(static::getPassengerName())
                 ->middleName(static::getPassengerMiddleName())
                 ->birthDate(static::getPassengerBirthDate())
-                ->phone(static::getPassengerPhone())
+                ->phone(static::getPassengerPhone(), $defaultRegion)
             );
 
         return spin(fn (): CBResult => $clientFactory->connection($connection)->query($query), 'Booking flight...');
