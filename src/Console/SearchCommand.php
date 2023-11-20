@@ -11,10 +11,14 @@ use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\Contracts\ClientFactory;
 use TTBooking\WBEngine\DTO\Common\Result;
+use TTBooking\WBEngine\DTO\CreateBooking\Result as CBResult;
+use TTBooking\WBEngine\DTO\Enums\Gender;
+use TTBooking\WBEngine\DTO\Enums\PassengerType;
 
-use function Laravel\Prompts\{note, search, select, spin, table, text, warning};
-use function TTBooking\WBEngine\data_get;
-use function TTBooking\WBEngine\Functional\do\{choose, fly};
+use function Laravel\Prompts\{ note, search, select, spin, table, text, warning };
+use function TTBooking\WBEngine\Functional\a\passenger;
+use function TTBooking\WBEngine\Functional\do\{ book, choose, fly };
+use function TTBooking\WBEngine\{ data_get, trans_enum_cases };
 
 #[AsCommand(
     name: 'wbeng:search',
@@ -85,6 +89,17 @@ class SearchCommand extends Command
         }
 
         $this->displayFlights($selectResult->flightGroups);
+
+        $bookResult = $this->createBooking(
+            clientFactory: $clientFactory,
+            searchResult: $searchResult,
+            flightGroupId: $flightGroupId,
+            itineraryId: 0,
+            flightId: 0,
+        );
+
+        static::displayStatus($bookResult->context);
+        static::displayMessages($bookResult->messages);
 
         return static::SUCCESS;
     }
@@ -167,6 +182,102 @@ class SearchCommand extends Command
         return spin(fn (): Result => $clientFactory->connection($connection)->query(
             choose()->fromSearchResult($searchResult, $flightGroupId, $itineraryId, $flightId)
         ), 'Checking availability...');
+    }
+
+    protected static function getCustomerName(): string
+    {
+        return text(
+            label: 'Customer name',
+            placeholder: 'Ivanov Ivan',
+            required: true,
+        );
+    }
+
+    protected static function getCustomerEmail(): string
+    {
+        return text(
+            label: 'Customer e-mail',
+            placeholder: 'i.ivanov@example.com',
+            required: true,
+        );
+    }
+
+    protected static function choosePassengerType(): PassengerType
+    {
+        $type = (string) select(
+            label: 'Passenger type',
+            options: trans_enum_cases(PassengerType::class),
+            default: PassengerType::Adult->name,
+        );
+
+        /** @var PassengerType */
+        return constant(PassengerType::class.'::'.$type);
+    }
+
+    protected static function choosePassengerGender(): Gender
+    {
+        $type = (string) select(
+            label: 'Passenger gender',
+            options: trans_enum_cases(Gender::class),
+        );
+
+        /** @var Gender */
+        return constant(Gender::class.'::'.$type);
+    }
+
+    protected static function getPassengerSurname(): string
+    {
+        return text(
+            label: 'Passenger last name',
+            placeholder: 'Ivanov',
+            required: true,
+        );
+    }
+
+    protected static function getPassengerName(): string
+    {
+        return text(
+            label: 'Passenger first name',
+            placeholder: 'Ivan',
+            required: true,
+        );
+    }
+
+    protected static function getPassengerMiddleName(): string
+    {
+        return text(
+            label: 'Passenger middle name',
+            placeholder: 'Ivanovich',
+            required: true,
+        );
+    }
+
+    protected static function getPassengerBirthDate(): string
+    {
+        return text(
+            label: 'Passenger birth date',
+            required: true,
+        );
+    }
+
+    protected function createBooking(ClientFactory $clientFactory, Result $searchResult, int $flightGroupId, int $itineraryId, int $flightId): CBResult
+    {
+        /** @var string $connection */
+        $connection = $this->option('connection');
+
+        $query = book()
+            ->fromSearchResult($searchResult, $flightGroupId, $itineraryId, $flightId)
+            ->customer(static::getCustomerName(), static::getCustomerEmail(), '0', '0', '0')
+            ->passengers(passenger()
+                ->type(static::choosePassengerType())
+                ->gender(static::choosePassengerGender())
+                ->lastName(static::getPassengerSurname())
+                ->firstName(static::getPassengerName())
+                ->middleName(static::getPassengerMiddleName())
+                ->birthDate(static::getPassengerBirthDate())
+            );
+
+        return spin(fn (): CBResult => $clientFactory->connection($connection)->query($query), 'Booking flight...');
     }
 
     protected static function displayStatus(Result\Context $context): void

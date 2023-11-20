@@ -23,6 +23,8 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
      */
     public function boot(): void
     {
+        $this->loadTranslationsFrom(__DIR__.'/../lang', 'wbeng-client');
+
         $this->commands([
             Console\SearchCommand::class,
         ]);

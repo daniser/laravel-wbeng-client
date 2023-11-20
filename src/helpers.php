@@ -6,11 +6,34 @@ namespace TTBooking\WBEngine;
 
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 use TTBooking\WBEngine\Facades\WBEngine;
+use UnitEnum;
 
 function wbeng(string $connection = null): Client
 {
     return WBEngine::connection($connection);
+}
+
+function trans_enum(UnitEnum $case, string $variant = ''): string
+{
+    return trans(implode('.', [
+        'wbeng-client::enum',
+        Str::snake(class_basename($case)).($variant ? '_'.$variant : $variant),
+        Str::snake($case->name),
+    ]));
+}
+
+/**
+ * @param  class-string<UnitEnum>  $enumClass
+ * @return array<string, string>
+ */
+function trans_enum_cases(string $enumClass): array
+{
+    return Arr::mapWithKeys(
+        $enumClass::cases(),
+        static fn (UnitEnum $case) => [$case->name => trans_enum($case)]
+    );
 }
 
 /**
