@@ -248,7 +248,6 @@ class SearchCommand extends Command
         return text(
             label: 'Passenger middle name',
             placeholder: 'Ivanovich',
-            required: true,
         );
     }
 
@@ -256,6 +255,14 @@ class SearchCommand extends Command
     {
         return text(
             label: 'Passenger birth date',
+            required: true,
+        );
+    }
+
+    protected static function getPassengerPhone(): string
+    {
+        return text(
+            label: 'Passenger phone',
             required: true,
         );
     }
@@ -275,6 +282,7 @@ class SearchCommand extends Command
                 ->firstName(static::getPassengerName())
                 ->middleName(static::getPassengerMiddleName())
                 ->birthDate(static::getPassengerBirthDate())
+                ->phone(static::getPassengerPhone())
             );
 
         return spin(fn (): CBResult => $clientFactory->connection($connection)->query($query), 'Booking flight...');
