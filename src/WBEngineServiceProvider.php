@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine;
 
 use Illuminate\Contracts\Support\DeferrableProvider;
+use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
 
 class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -47,6 +48,13 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->alias('wbeng-client', Contracts\ClientFactory::class);
         $this->app->alias('wbeng-client.connection', ClientInterface::class);
         $this->app->alias('wbeng-client.connection', AsyncClientInterface::class);
+
+        $this->app->extend(Client::class, static function (Client $client) {
+            /** @var list<class-string> $middleware */
+            $middleware = config('wbeng-client.middleware', []);
+
+            return new ExtendedClient($client, new Pipeline, $middleware);
+        });
     }
 
     /**
