@@ -46,7 +46,7 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
      *
      * @throws BindingResolutionException
      */
-    protected function createDefaultDriver(array $config, string $connection): Client
+    protected function createDefaultDriver(array $config, string $connection): ClientInterface
     {
         unset($config['driver']);
 
