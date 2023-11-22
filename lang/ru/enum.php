@@ -46,6 +46,7 @@ return [
         'build' => 'build',
         'operation' => 'операция',
         'provider' => 'провайдер',
+        'parallel' => 'parallel',
     ],
 
     'message_type' => [
