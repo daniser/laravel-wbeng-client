@@ -15,11 +15,11 @@ class StateMiddleware
      * @template TResult of ResultInterface
      *
      * @param  QueryInterface<TResult>  $query
-     * @param  Closure(QueryInterface<TResult>): TResult  $next
+     * @param  Closure(QueryInterface<TResult>): State<TResult>  $next
      * @return State<TResult>
      */
     public function handle(QueryInterface $query, Closure $next): State
     {
-        return new State($query, $next($query));
+        return $next($query);
     }
 }

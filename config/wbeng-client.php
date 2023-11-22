@@ -36,7 +36,7 @@ return [
     */
 
     'middleware' => [
-        TTBooking\WBEngine\Middleware\StateMiddleware::class,
+        //
     ],
 
     /*
