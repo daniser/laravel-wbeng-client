@@ -32,6 +32,8 @@ return [
     |--------------------------------------------------------------------------
     | Default WBEngine Storage Name
     |--------------------------------------------------------------------------
+    |
+    | Supported drivers: "eloquent", "database", "filesystem", "array", "null"
     */
 
     'store' => env('WB_STORAGE', 'eloquent'),

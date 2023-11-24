@@ -29,7 +29,7 @@ class StorageManager extends Support\Manager implements Contracts\StateStorage, 
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function createEloquentDriver(array $config, string $connection): Stores\EloquentStorage
+    protected function createEloquentDriver(array $config): Stores\EloquentStorage
     {
         unset($config['driver']);
 
@@ -44,7 +44,7 @@ class StorageManager extends Support\Manager implements Contracts\StateStorage, 
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function createDatabaseDriver(array $config, string $connection): Stores\DatabaseStorage
+    protected function createDatabaseDriver(array $config): Stores\DatabaseStorage
     {
         unset($config['driver']);
 
@@ -59,30 +59,20 @@ class StorageManager extends Support\Manager implements Contracts\StateStorage, 
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
-    protected function createFilesystemDriver(array $config, string $connection): Stores\FilesystemStorage
+    protected function createFilesystemDriver(array $config): Stores\FilesystemStorage
     {
         unset($config['driver']);
 
         return $this->container->make(Stores\FilesystemStorage::class, $config);
     }
 
-    /**
-     * @param  array{driver: string}  $config
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
-    protected function createArrayDriver(array $config, string $connection): Stores\ArrayStorage
+    protected function createArrayDriver(): Stores\ArrayStorage
     {
-        return $this->container->make(Stores\ArrayStorage::class);
+        return new Stores\ArrayStorage;
     }
 
-    /**
-     * @param  array{driver: string}  $config
-     *
-     * @throws \Illuminate\Contracts\Container\BindingResolutionException
-     */
-    protected function createNullDriver(array $config, string $connection): Stores\NullStorage
+    protected function createNullDriver(): Stores\NullStorage
     {
-        return $this->container->make(Stores\NullStorage::class);
+        return new Stores\NullStorage;
     }
 }
