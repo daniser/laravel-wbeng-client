@@ -15,7 +15,7 @@ use TTBooking\WBEngine\DTO\Enums\RespondType;
  */
 class ConnectionManager extends Support\Manager implements AsyncClientInterface, ClientInterface, Contracts\ClientFactory
 {
-    protected string $configName = 'wbeng-client';
+    protected string $selectorKey = 'wbeng-client.connection';
 
     public function query(QueryInterface $query): StateInterface
     {

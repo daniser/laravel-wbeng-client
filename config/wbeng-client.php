@@ -10,7 +10,7 @@ return [
     |--------------------------------------------------------------------------
     */
 
-    'default' => env('WB_CONNECTION', 'default'),
+    'connection' => env('WB_CONNECTION', 'default'),
 
     'connections' => [
 

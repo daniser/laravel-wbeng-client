@@ -9,7 +9,7 @@ namespace TTBooking\WBEngine;
  */
 class StorageManager extends Support\Manager implements Contracts\StateStorage, Contracts\StorageFactory
 {
-    protected string $configName = 'wbeng-client';
+    protected string $selectorKey = 'wbeng-client.store';
 
     public function store(StateInterface $state, StateInterface $parentState = null): string
     {

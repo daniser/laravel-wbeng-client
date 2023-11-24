@@ -18,8 +18,11 @@ use TTBooking\WBEngine\Contracts\Factory;
  */
 abstract class Manager implements Factory
 {
-    /** Configuration name. */
-    protected string $configName;
+    /** Connection selector key. */
+    protected string $selectorKey;
+
+    /** Connection pool key. */
+    protected string $poolKey;
 
     /**
      * The registered custom driver creators.
@@ -50,10 +53,8 @@ abstract class Manager implements Factory
      */
     public function getDefaultDriver(): string
     {
-        $configName = $this->getConfigName();
-
         /** @var string */
-        return $this->config->get("$configName.default", 'default');
+        return $this->config->get($this->getSelectorKey(), 'default');
     }
 
     public function connection(string $name = null): object
@@ -126,23 +127,31 @@ abstract class Manager implements Factory
     }
 
     /**
-     * Get the configuration name.
+     * Get the connection selector key.
      */
-    protected function getConfigName(): string
+    protected function getSelectorKey(): string
     {
-        return $this->configName;
+        return $this->selectorKey;
     }
 
     /**
-     * Get the cache connection configuration.
+     * Get the connection pool key.
+     */
+    protected function getPoolKey(): string
+    {
+        return $this->poolKey ??= Str::plural($this->getSelectorKey());
+    }
+
+    /**
+     * Get the connection configuration.
      *
      * @return array{driver: string}
      */
     protected function getConfig(string $name): array
     {
-        $configName = $this->getConfigName();
+        $poolKey = $this->getPoolKey();
 
         /** @var array{driver: string} */
-        return $this->config->get("$configName.connections.$name", []) + ['driver' => $name];
+        return $this->config->get("$poolKey.$name", []) + ['driver' => $name];
     }
 }
