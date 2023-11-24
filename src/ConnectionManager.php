@@ -41,7 +41,6 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
      *     id: int,
      *     context_id: int|null,
      *     legacy: bool,
-     *     serializer: 'symfony'|'jms'|'default'|null,
      * } $config
      *
      * @throws BindingResolutionException
@@ -53,14 +52,10 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
         /** @var bool $legacy */
         $legacy = Arr::pull($config, 'legacy');
 
-        /** @var string|null $serializer */
-        $serializer = Arr::pull($config, 'serializer');
-
         return $this->container->make(Client::class, [
             'baseUri' => Arr::pull($config, 'uri'),
             'context' => new Context(...$config),
             'legacy' => $legacy,
-            'serializer' => SerializerFactory::createSerializer($serializer, $legacy),
         ]);
     }
 }

@@ -19,6 +19,7 @@ abstract class TestCase extends OrchestraTestCase
     {
         return [
             'WBEngine' => Facades\WBEngine::class,
+            'WBSerializer' => Facades\Serializer::class,
             'WBStorage' => Facades\Storage::class,
         ];
     }

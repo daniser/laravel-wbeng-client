@@ -52,6 +52,11 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
     {
         $this->mergeConfigFrom(__DIR__.'/../config/wbeng-client.php', 'wbeng-client');
 
+        $this->app->singleton('wbeng-serializer', static function ($app) {
+            return SerializerFactory::createSerializer($app['config']['wbeng-client.serializer']);
+        });
+        $this->app->alias('wbeng-serializer', SerializerInterface::class);
+
         $this->app->singleton('wbeng-client.connection', static fn ($app) => $app['wbeng-client']->connection());
         $this->app->alias('wbeng-client', Contracts\ClientFactory::class);
         $this->app->alias('wbeng-client.connection', ClientInterface::class);
@@ -77,6 +82,7 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
     public function provides(): array
     {
         return [
+            'wbeng-serializer', SerializerInterface::class,
             'wbeng-client', 'wbeng-client.connection',
             Contracts\ClientFactory::class, ClientInterface::class, AsyncClientInterface::class,
             'wbeng-store', 'wbeng-store.store',

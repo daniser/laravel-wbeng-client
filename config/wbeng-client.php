@@ -24,7 +24,6 @@ return [
             'locale' => env('WB_LOCALE', 'ru'),
             'respondType' => RespondType::JSON,
             'legacy' => env('WB_LEGACY', true),
-            'serializer' => env('WB_SERIALIZER'),
         ],
 
     ],
@@ -52,6 +51,16 @@ return [
         ],
 
     ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Query/Result Serializer
+    |--------------------------------------------------------------------------
+    |
+    | Supported serializers: "default", "symfony", "jms"
+    */
+
+    'serializer' => env('WB_SERIALIZER'),
 
     /*
     |--------------------------------------------------------------------------

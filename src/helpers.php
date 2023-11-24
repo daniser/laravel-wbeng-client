@@ -17,6 +17,11 @@ function wbeng(string $connection = null): Client
     return WBEngine::connection($connection);
 }
 
+function wbser(): SerializerInterface
+{
+    return resolve('wbeng-serializer');
+}
+
 function wbstore(string $connection = null): StateStorage
 {
     return Storage::connection($connection);

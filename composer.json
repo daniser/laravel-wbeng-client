@@ -47,6 +47,7 @@
             ],
             "aliases": {
                 "WBEngine": "TTBooking\\WBEngine\\Facades\\WBEngine",
+                "WBSerializer": "TTBooking\\WBEngine\\Facades\\Serializer",
                 "WBStorage": "TTBooking\\WBEngine\\Facades\\Storage"
             }
         }
