@@ -22,47 +22,32 @@ class StorageManager extends Support\Manager implements Contracts\StateStorage, 
     }
 
     /**
-     * @param array{
-     *     driver: string,
-     *     model: class-string<Models\State>,
-     * } $config
+     * @param  array{model: class-string<Models\State>}  $config
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function createEloquentDriver(array $config): Stores\EloquentStorage
     {
-        unset($config['driver']);
-
         return $this->container->make(Stores\EloquentStorage::class, $config);
     }
 
     /**
-     * @param array{
-     *     driver: string,
-     *     table: string,
-     * } $config
+     * @param  array{table: string}  $config
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function createDatabaseDriver(array $config): Stores\DatabaseStorage
     {
-        unset($config['driver']);
-
         return $this->container->make(Stores\DatabaseStorage::class, $config);
     }
 
     /**
-     * @param array{
-     *     driver: string,
-     *     path: string,
-     * } $config
+     * @param  array{path: string}  $config
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */
     protected function createFilesystemDriver(array $config): Stores\FilesystemStorage
     {
-        unset($config['driver']);
-
         return $this->container->make(Stores\FilesystemStorage::class, $config);
     }
 

@@ -7,6 +7,7 @@ namespace TTBooking\WBEngine\Support;
 use Closure;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Container\Container;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
 use InvalidArgumentException;
 use TTBooking\WBEngine\Contracts\Factory;
@@ -102,28 +103,31 @@ abstract class Manager implements Factory
     {
         $config = $this->getConfig($name);
 
-        if (isset($this->customCreators[$config['driver']])) {
-            return $this->callCustomCreator($config);
+        /** @var string $driver */
+        $driver = Arr::pull($config, 'driver');
+
+        if (isset($this->customCreators[$driver])) {
+            return $this->callCustomCreator($config, $driver);
         } else {
-            $method = 'create'.Str::studly($config['driver']).'Driver';
+            $method = 'create'.Str::studly($driver).'Driver';
 
             if (method_exists($this, $method)) {
-                return $this->$method($config, $name);
+                return $this->$method($config, $name, $driver);
             }
         }
 
-        throw new InvalidArgumentException("Driver [{$config['driver']}] not supported.");
+        throw new InvalidArgumentException("Driver [$driver] not supported.");
     }
 
     /**
      * Call a custom driver creator.
      *
-     * @param  array{driver: string}  $config
+     * @param  array<string, mixed>  $config
      * @phpstan-return TConnection
      */
-    protected function callCustomCreator(array $config): object
+    protected function callCustomCreator(array $config, string $driver): object
     {
-        return $this->customCreators[$config['driver']]($this->container, $config);
+        return $this->customCreators[$driver]($this->container, $config, $driver);
     }
 
     /**

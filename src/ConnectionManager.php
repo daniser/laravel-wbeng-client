@@ -29,7 +29,6 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
 
     /**
      * @param array{
-     *     driver: string,
      *     uri: string,
      *     login: string,
      *     password: string,
@@ -45,10 +44,8 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
      *
      * @throws BindingResolutionException
      */
-    protected function createDefaultDriver(array $config, string $connection): ClientInterface
+    protected function createDefaultDriver(array $config): ClientInterface
     {
-        unset($config['driver']);
-
         /** @var bool $legacy */
         $legacy = Arr::pull($config, 'legacy');
 
