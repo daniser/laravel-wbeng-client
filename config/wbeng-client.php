@@ -31,12 +31,36 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Default WBEngine Storage Name
+    |--------------------------------------------------------------------------
+    */
+
+    'store' => env('WB_STORAGE', 'eloquent'),
+
+    'stores' => [
+
+        'eloquent' => [
+            'model' => TTBooking\WBEngine\Models\State::class,
+        ],
+
+        'database' => [
+            'table' => 'wbeng_state',
+        ],
+
+        'filesystem' => [
+            'path' => 'wbeng/state',
+        ],
+
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
     | Query Middleware
     |--------------------------------------------------------------------------
     */
 
     'middleware' => [
-        //
+        TTBooking\WBEngine\Middleware\StoreMiddleware::class,
     ],
 
     /*

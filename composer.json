@@ -46,7 +46,8 @@
                 "TTBooking\\WBEngine\\WBEngineServiceProvider"
             ],
             "aliases": {
-                "WBEngine": "TTBooking\\WBEngine\\Facades\\WBEngine"
+                "WBEngine": "TTBooking\\WBEngine\\Facades\\WBEngine",
+                "WBStorage": "TTBooking\\WBEngine\\Facades\\Storage"
             }
         }
     },

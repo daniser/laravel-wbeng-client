@@ -7,12 +7,19 @@ namespace TTBooking\WBEngine;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use TTBooking\WBEngine\Contracts\StateStorage;
+use TTBooking\WBEngine\Facades\Storage;
 use TTBooking\WBEngine\Facades\WBEngine;
 use UnitEnum;
 
 function wbeng(string $connection = null): Client
 {
     return WBEngine::connection($connection);
+}
+
+function wbstore(string $connection = null): StateStorage
+{
+    return Storage::connection($connection);
 }
 
 function trans_enum(UnitEnum $case, string $variant = ''): string

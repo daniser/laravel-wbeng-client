@@ -18,6 +18,7 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
      */
     public array $singletons = [
         'wbeng-client' => ConnectionManager::class,
+        'wbeng-store' => StorageManager::class,
     ];
 
     /**
@@ -35,6 +36,12 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
             $this->publishes([
                 __DIR__.'/../config/wbeng-client.php' => $this->app->configPath('wbeng-client.php'),
             ], ['wbeng-client-config', 'wbeng-client', 'config']);
+
+            $this->publishes([
+                __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
+            ], ['wbeng-client-migrations', 'wbeng-client', 'migrations']);
+
+            $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
         }
     }
 
@@ -56,6 +63,10 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
 
             return new ExtendedClient($client, new Pipeline($container), $middleware);
         });
+
+        $this->app->singleton('wbeng-store.store', static fn ($app) => $app['wbeng-store']->connection());
+        $this->app->alias('wbeng-store', Contracts\StorageFactory::class);
+        $this->app->alias('wbeng-store.store', Contracts\StateStorage::class);
     }
 
     /**
@@ -68,6 +79,8 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
         return [
             'wbeng-client', 'wbeng-client.connection',
             Contracts\ClientFactory::class, ClientInterface::class, AsyncClientInterface::class,
+            'wbeng-store', 'wbeng-store.store',
+            Contracts\StorageFactory::class, Contracts\StateStorage::class,
         ];
     }
 }

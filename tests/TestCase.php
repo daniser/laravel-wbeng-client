@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine\Tests;
 
 use Orchestra\Testbench\TestCase as OrchestraTestCase;
-use TTBooking\WBEngine\Facades\WBEngine;
+use TTBooking\WBEngine\Facades;
 use TTBooking\WBEngine\WBEngineServiceProvider;
 
 abstract class TestCase extends OrchestraTestCase
@@ -18,7 +18,8 @@ abstract class TestCase extends OrchestraTestCase
     protected function getPackageAliases($app): array
     {
         return [
-            'WBEngine' => WBEngine::class,
+            'WBEngine' => Facades\WBEngine::class,
+            'WBStorage' => Facades\Storage::class,
         ];
     }
 

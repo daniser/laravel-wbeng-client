@@ -28,7 +28,7 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
     }
 
     /**
-     * @param  array{
+     * @param array{
      *     driver: string,
      *     uri: string,
      *     login: string,
@@ -41,8 +41,8 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
      *     id: int,
      *     context_id: int|null,
      *     legacy: bool,
-     *     serializer: 'symfony'|'jms'|'default'|null
-     * }  $config
+     *     serializer: 'symfony'|'jms'|'default'|null,
+     * } $config
      *
      * @throws BindingResolutionException
      */
