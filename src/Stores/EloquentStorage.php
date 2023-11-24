@@ -28,7 +28,7 @@ class EloquentStorage implements StateStorage
     public function store(StateInterface $state, StateInterface $parentState = null): string
     {
         /** @var string */
-        return $this->model->newQuery()->create([
+        return $this->model->newQuery()->forceCreate([
             'base_uri' => $state->getBaseUri(),
             'query' => $state->getQuery(),
             'result' => $state->getResult(),
