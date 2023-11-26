@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine\Stores;
 
 use TTBooking\WBEngine\Contracts\StateStorage;
-use TTBooking\WBEngine\StateInterface;
+use TTBooking\WBEngine\State;
 
 class FilesystemStorage implements StateStorage
 {
@@ -13,12 +13,12 @@ class FilesystemStorage implements StateStorage
     {
     }
 
-    public function store(StateInterface $state, StateInterface $parentState = null): string
+    public function store(State $state, State $parentState = null): string
     {
         // TODO: Implement store() method.
     }
 
-    public function retrieve(string $id): StateInterface
+    public function retrieve(string $id): State
     {
         // TODO: Implement retrieve() method.
     }

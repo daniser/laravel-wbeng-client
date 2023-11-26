@@ -11,7 +11,6 @@ use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\Models\State as StateModel;
 use TTBooking\WBEngine\State;
-use TTBooking\WBEngine\StateInterface;
 
 class EloquentStorage implements StateStorage
 {
@@ -25,17 +24,17 @@ class EloquentStorage implements StateStorage
         $this->model = is_string($model) ? new $model : $model;
     }
 
-    public function store(StateInterface $state, StateInterface $parentState = null): string
+    public function store(State $state, State $parentState = null): string
     {
         /** @var string */
         return $this->model->newQuery()->forceCreate([
-            'base_uri' => $state->getBaseUri(),
-            'query' => $state->getQuery(),
-            'result' => $state->getResult(),
+            'base_uri' => $state->baseUri,
+            'query' => $state->query,
+            'result' => $state->result,
         ])->getKey();
     }
 
-    public function retrieve(string $id): StateInterface
+    public function retrieve(string $id): State
     {
         try {
             /** @var StateModel $stateModel */
@@ -45,7 +44,7 @@ class EloquentStorage implements StateStorage
         }
 
         try {
-            $state = $this->container?->make(StateInterface::class) ?? new State;
+            $state = $this->container?->make(State::class) ?? new State;
         } catch (BindingResolutionException) {
             $state = new State;
         }

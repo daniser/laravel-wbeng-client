@@ -17,7 +17,7 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
 {
     protected string $selectorKey = 'wbeng-client.connection';
 
-    public function query(QueryInterface $query): StateInterface
+    public function query(QueryInterface $query): State
     {
         return $this->connection()->query($query);
     }

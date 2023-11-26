@@ -6,20 +6,20 @@ namespace TTBooking\WBEngine\Contracts;
 
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\ResultInterface;
-use TTBooking\WBEngine\StateInterface;
+use TTBooking\WBEngine\State;
 
 interface StateStorage
 {
     /**
-     * @param  StateInterface<ResultInterface>  $state
-     * @param  StateInterface<ResultInterface>|null  $parentState
+     * @param  State<ResultInterface>  $state
+     * @param  State<ResultInterface>|null  $parentState
      */
-    public function store(StateInterface $state, StateInterface $parentState = null): string;
+    public function store(State $state, State $parentState = null): string;
 
     /**
-     * @return StateInterface<ResultInterface>
+     * @return State<ResultInterface>
      *
      * @throws StateNotFoundException
      */
-    public function retrieve(string $id): StateInterface;
+    public function retrieve(string $id): State;
 }
