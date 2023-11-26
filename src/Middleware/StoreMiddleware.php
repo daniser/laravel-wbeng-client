@@ -8,7 +8,7 @@ use Closure;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
-use TTBooking\WBEngine\State;
+use TTBooking\WBEngine\StorableState;
 
 class StoreMiddleware
 {
@@ -20,15 +20,13 @@ class StoreMiddleware
      * @template TResult of ResultInterface
      *
      * @param  QueryInterface<TResult>  $query
-     * @param  Closure(QueryInterface<TResult>): State<TResult>  $next
-     * @return State<TResult>
+     * @param  Closure(QueryInterface<TResult>): StorableState<TResult>  $next
+     * @return StorableState<TResult>
      */
-    public function handle(QueryInterface $query, Closure $next): State
+    public function handle(QueryInterface $query, Closure $next): StorableState
     {
         $state = $next($query);
 
-        $this->storage->store($state);
-
-        return $state;
+        return $this->storage->put($state);
     }
 }

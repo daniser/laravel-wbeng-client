@@ -171,7 +171,7 @@ class SearchCommand extends Command
 
         return spin(fn (): Result => $clientFactory->connection($connection)->query(
             fly()->from($origin)->to($destination)->on($date)//->sortByPrice()
-        )->getResult(), 'Searching flights...');
+        )->result, 'Searching flights...');
     }
 
     protected function selectFlight(ClientFactory $clientFactory, Result $searchResult, int $flightGroupId, int $itineraryId, int $flightId): Result
@@ -181,7 +181,7 @@ class SearchCommand extends Command
 
         return spin(fn (): Result => $clientFactory->connection($connection)->query(
             choose()->fromSearchResult($searchResult, $flightGroupId, $itineraryId, $flightId)
-        )->getResult(), 'Checking availability...');
+        )->result, 'Checking availability...');
     }
 
     protected static function getCustomerName(): string
@@ -298,7 +298,7 @@ class SearchCommand extends Command
                 ->phone(static::getPassengerPhone(), $defaultRegion)
             );
 
-        return spin(fn (): CBResult => $clientFactory->connection($connection)->query($query)->getResult(), 'Booking flight...');
+        return spin(fn (): CBResult => $clientFactory->connection($connection)->query($query)->result, 'Booking flight...');
     }
 
     protected static function displayStatus(Result\Context $context): void

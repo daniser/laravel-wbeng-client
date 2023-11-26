@@ -11,14 +11,19 @@ class StorageManager extends Support\Manager implements Contracts\StateStorage, 
 {
     protected string $selectorKey = 'wbeng-client.store';
 
-    public function store(State $state, State $parentState = null): string
+    public function has(string $id): bool
     {
-        return $this->connection()->store($state, $parentState);
+        return $this->connection()->has($id);
     }
 
-    public function retrieve(string $id): State
+    public function get(string $id): StorableState
     {
-        return $this->connection()->retrieve($id);
+        return $this->connection()->get($id);
+    }
+
+    public function put(StorableState $state): StorableState
+    {
+        return $this->connection()->put($state);
     }
 
     /**

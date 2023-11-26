@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine\Stores;
 
 use TTBooking\WBEngine\Contracts\StateStorage;
-use TTBooking\WBEngine\State;
+use TTBooking\WBEngine\StorableState;
 
 class DatabaseStorage implements StateStorage
 {
@@ -13,13 +13,18 @@ class DatabaseStorage implements StateStorage
     {
     }
 
-    public function store(State $state, State $parentState = null): string
+    public function has(string $id): bool
     {
-        // TODO: Implement store() method.
+        // TODO: Implement has() method.
     }
 
-    public function retrieve(string $id): State
+    public function get(string $id): StorableState
     {
-        // TODO: Implement retrieve() method.
+        // TODO: Implement get() method.
+    }
+
+    public function put(StorableState $state): StorableState
+    {
+        // TODO: Implement put() method.
     }
 }

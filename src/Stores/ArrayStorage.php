@@ -8,23 +8,27 @@ use Illuminate\Support\Str;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\ResultInterface;
-use TTBooking\WBEngine\State;
+use TTBooking\WBEngine\StorableState;
 
 class ArrayStorage implements StateStorage
 {
-    /** @var array<string, State<ResultInterface>> */
+    /** @var array<string, StorableState<ResultInterface>> */
     protected array $states = [];
 
-    public function store(State $state, State $parentState = null): string
+    public function has(string $id): bool
     {
-        $id = (string) Str::orderedUuid();
-        $this->states[$id] = $state;
-
-        return $id;
+        return isset($this->states[$id]);
     }
 
-    public function retrieve(string $id): State
+    public function get(string $id): StorableState
     {
         return $this->states[$id] ?? throw new StateNotFoundException("State [$id] not found");
+    }
+
+    public function put(StorableState $state): StorableState
+    {
+        $id = (string) Str::orderedUuid();
+
+        return $this->states[$id] = $state->id($id);
     }
 }

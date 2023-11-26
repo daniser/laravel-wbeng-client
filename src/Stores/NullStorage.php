@@ -6,17 +6,22 @@ namespace TTBooking\WBEngine\Stores;
 
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
-use TTBooking\WBEngine\State;
+use TTBooking\WBEngine\StorableState;
 
 class NullStorage implements StateStorage
 {
-    public function store(State $state, State $parentState = null): string
+    public function has(string $id): bool
     {
-        return '';
+        return false;
     }
 
-    public function retrieve(string $id): never
+    public function get(string $id): never
     {
         throw new StateNotFoundException('Null storage is always empty');
+    }
+
+    public function put(StorableState $state): StorableState
+    {
+        return $state;
     }
 }

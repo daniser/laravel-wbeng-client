@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\Models\State as StateModel;
-use TTBooking\WBEngine\State;
+use TTBooking\WBEngine\StorableState;
 
 class EloquentStorage implements StateStorage
 {
@@ -24,17 +24,12 @@ class EloquentStorage implements StateStorage
         $this->model = is_string($model) ? new $model : $model;
     }
 
-    public function store(State $state, State $parentState = null): string
+    public function has(string $id): bool
     {
-        /** @var string */
-        return $this->model->newQuery()->forceCreate([
-            'base_uri' => $state->baseUri,
-            'query' => $state->query,
-            'result' => $state->result,
-        ])->getKey();
+        return $this->model->newQuery()->whereKey($id)->exists();
     }
 
-    public function retrieve(string $id): State
+    public function get(string $id): StorableState
     {
         try {
             /** @var StateModel $stateModel */
@@ -44,14 +39,27 @@ class EloquentStorage implements StateStorage
         }
 
         try {
-            $state = $this->container?->make(State::class) ?? new State;
+            $state = $this->container?->make(StorableState::class) ?? new StorableState;
         } catch (BindingResolutionException) {
-            $state = new State;
+            $state = new StorableState;
         }
 
         return $state
-            ->setBaseUri($stateModel->base_uri)
-            ->setQuery($stateModel->query)
-            ->setResult($stateModel->result);
+            ->id($stateModel->uuid)
+            ->baseUri($stateModel->base_uri)
+            ->query($stateModel->query)
+            ->result($stateModel->result);
+    }
+
+    public function put(StorableState $state): StorableState
+    {
+        /** @var string $id */
+        $id = $this->model->newQuery()->forceCreate([
+            'base_uri' => $state->baseUri,
+            'query' => $state->query,
+            'result' => $state->result,
+        ])->getKey();
+
+        return $state->id($id);
     }
 }
