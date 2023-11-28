@@ -6,13 +6,14 @@ namespace TTBooking\WBEngine\Facades;
 
 use Illuminate\Support\Facades\Facade;
 use TTBooking\WBEngine\Contracts\StateStorage;
-use TTBooking\WBEngine\State;
+use TTBooking\WBEngine\StorableState;
 
 /**
  * @method static StateStorage connection(string $name = null)
  * @method static StateStorage[] getConnections()
- * @method static string store(State $state, State $parentState = null)
- * @method static State retrieve(string $id)
+ * @method static bool has(string $id)
+ * @method static StorableState get(string $id)
+ * @method static StorableState put(StorableState $state)
  *
  * @see \TTBooking\WBEngine\StorageManager
  */
