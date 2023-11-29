@@ -85,8 +85,9 @@ function data_get(mixed $target, string|array|int|null $key, mixed $default = nu
         }
 
         $segment = match ($segment) {
-            '^' => array_key_first($target),
-            '$' => array_key_last($target),
+            '\*' => '*',
+            '\^' => '^', '^' => array_key_first($target),
+            '\$' => '$', '$' => array_key_last($target),
             default => $segment,
         };
 
