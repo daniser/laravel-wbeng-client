@@ -4,22 +4,25 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Stores;
 
-use Illuminate\Contracts\Container\BindingResolutionException;
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Enumerable;
 use TTBooking\WBEngine\Contracts\StateStorage;
+use TTBooking\WBEngine\Contracts\StorableState;
+use TTBooking\WBEngine\Exceptions\SessionNotFoundException;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
-use TTBooking\WBEngine\Models\State as StateModel;
-use TTBooking\WBEngine\StorableState;
+use TTBooking\WBEngine\Models\State;
+use TTBooking\WBEngine\QueryInterface;
+use TTBooking\WBEngine\ResultInterface;
 
 class EloquentStorage implements StateStorage
 {
-    protected StateModel $model;
+    /** @var State<ResultInterface> */
+    protected State $model;
 
     /**
-     * @param  StateModel|class-string<StateModel>  $model
+     * @param  State<ResultInterface>|class-string<State<ResultInterface>>  $model
      */
-    public function __construct(protected ?Container $container = null, StateModel|string $model = StateModel::class)
+    public function __construct(State|string $model = State::class)
     {
         $this->model = is_string($model) ? new $model : $model;
     }
@@ -29,37 +32,57 @@ class EloquentStorage implements StateStorage
         return $this->model->newQuery()->whereKey($id)->exists();
     }
 
-    public function get(string $id): StorableState
+    /**
+     * @return State<ResultInterface>
+     *
+     * @throws StateNotFoundException
+     */
+    public function get(string $id): State
     {
         try {
-            /** @var StateModel $stateModel */
-            $stateModel = $this->model->newQuery()->findOrFail($id);
+            return $this->model->newQuery()->findOrFail($id);
         } catch (ModelNotFoundException $e) {
             throw new StateNotFoundException("State [$id] not found", $e->getCode(), $e);
         }
-
-        try {
-            $state = $this->container?->make(StorableState::class) ?? new StorableState;
-        } catch (BindingResolutionException) {
-            $state = new StorableState;
-        }
-
-        return $state
-            ->id($stateModel->uuid)
-            ->baseUri($stateModel->base_uri)
-            ->query($stateModel->query)
-            ->result($stateModel->result);
     }
 
-    public function put(StorableState $state): StorableState
+    /**
+     * @param  StorableState<ResultInterface>  $state
+     * @return State<ResultInterface>
+     */
+    public function put(StorableState $state): State
     {
-        /** @var string $id */
-        $id = $this->model->newQuery()->forceCreate([
-            'base_uri' => $state->baseUri,
-            'query' => $state->query,
-            'result' => $state->result,
-        ])->getKey();
+        if ($state instanceof State) {
+            $state->save();
 
-        return $state->id($id);
+            return $state;
+        }
+
+        return $this->model->newQuery()->forceCreate([
+            'base_uri' => $state->getBaseUri(),
+            'query' => $state->getQuery(),
+            'result' => $state->getResult(),
+        ]);
+    }
+
+    public function hasSession(string $id): bool
+    {
+        return $this->model->newQuery()->where('session_uuid', $id)->exists();
+    }
+
+    /**
+     * @param  class-string<QueryInterface<ResultInterface>>|null  $queryType
+     * @return Enumerable<string, StorableState<ResultInterface>>
+     *
+     * @throws SessionNotFoundException
+     */
+    public function session(string $id, ?string $queryType = null): Enumerable
+    {
+        return $this->model->newQuery() // @phpstan-ignore-line
+            ->where('session_uuid', $id)
+            ->when(isset($queryType))
+            ->where('endpoint', $queryType::getEndpoint()) // @phpstan-ignore-line
+            ->get()
+            ->keyBy('uuid');
     }
 }

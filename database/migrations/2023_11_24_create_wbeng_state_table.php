@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('wbeng_state', static function (Blueprint $table) {
             $table->uuid()->primary();
-            $table->uuid('parent_uuid')->nullable()->index();
+            $table->uuid('session_uuid')->index();
             $table->string('base_uri')->index();
             $table->string('endpoint', 32)->index();
             $table->json('query');

@@ -6,12 +6,13 @@ namespace TTBooking\WBEngine\Stores;
 
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\ConnectionInterface;
+use Illuminate\Support\Enumerable;
 use Illuminate\Support\Str;
 use TTBooking\WBEngine\Contracts\StateStorage;
+use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\ResultInterface;
 use TTBooking\WBEngine\SerializerInterface;
-use TTBooking\WBEngine\StorableState;
 
 class DatabaseStorage implements StateStorage
 {
@@ -42,22 +43,34 @@ class DatabaseStorage implements StateStorage
         $state = $this->container->make(StorableState::class);
 
         return $state
-            ->id($record['uuid'])
-            ->baseUri($record['base_uri'])
-            ->query($record['query'])
-            ->result($record['result']);
+            ->setId($record['uuid'])
+            ->setSessionId($record['session_uuid'])
+            ->setBaseUri($record['base_uri'])
+            ->setQuery($record['query'])
+            ->setResult($record['result']);
     }
 
     public function put(StorableState $state): StorableState
     {
         $this->connection->table($this->table)->insert([
-            'uuid' => $id = $state->id ?? (string) Str::orderedUuid(),
-            'base_uri' => $state->baseUri,
-            'endpoint' => $state->query::getEndpoint(),
-            'query' => $this->serializer->serialize($state->query),
-            'result' => $this->serializer->serialize($state->result),
+            'uuid' => $id = $state->getId() ?? (string) Str::orderedUuid(),
+            'session_uuid' => $sessionId = $state->getSessionId() ?? $id,
+            'base_uri' => $state->getBaseUri(),
+            'endpoint' => $state->getQuery()::getEndpoint(),
+            'query' => $this->serializer->serialize($state->getQuery()),
+            'result' => $this->serializer->serialize($state->getResult()),
         ]);
 
-        return $state->id($id);
+        return $state->setId($id)->setSessionId($sessionId);
+    }
+
+    public function hasSession(string $id): bool
+    {
+        return $this->connection->table($this->table)->where('session_uuid', $id)->exists();
+    }
+
+    public function session(string $id, ?string $queryType = null): Enumerable
+    {
+        //
     }
 }

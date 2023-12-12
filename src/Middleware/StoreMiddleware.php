@@ -6,9 +6,9 @@ namespace TTBooking\WBEngine\Middleware;
 
 use Closure;
 use TTBooking\WBEngine\Contracts\StateStorage;
+use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
-use TTBooking\WBEngine\StorableState;
 
 class StoreMiddleware
 {

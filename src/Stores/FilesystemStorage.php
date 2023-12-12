@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Stores;
 
+use Illuminate\Support\Enumerable;
 use TTBooking\WBEngine\Contracts\StateStorage;
-use TTBooking\WBEngine\StorableState;
+use TTBooking\WBEngine\Contracts\StorableState;
 
 class FilesystemStorage implements StateStorage
 {
@@ -26,5 +27,15 @@ class FilesystemStorage implements StateStorage
     public function put(StorableState $state): StorableState
     {
         // TODO: Implement put() method.
+    }
+
+    public function hasSession(string $id): bool
+    {
+        // TODO: Implement hasSession() method.
+    }
+
+    public function session(string $id, ?string $queryType = null): Enumerable
+    {
+        // TODO: Implement session() method.
     }
 }

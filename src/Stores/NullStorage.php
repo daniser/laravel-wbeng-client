@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine\Stores;
 
 use TTBooking\WBEngine\Contracts\StateStorage;
+use TTBooking\WBEngine\Contracts\StorableState;
+use TTBooking\WBEngine\Exceptions\SessionNotFoundException;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
-use TTBooking\WBEngine\StorableState;
 
 class NullStorage implements StateStorage
 {
@@ -23,5 +24,15 @@ class NullStorage implements StateStorage
     public function put(StorableState $state): StorableState
     {
         return $state;
+    }
+
+    public function hasSession(string $id): bool
+    {
+        return false;
+    }
+
+    public function session(string $id, ?string $queryType = null): never
+    {
+        throw new SessionNotFoundException('Null storage is always empty');
     }
 }

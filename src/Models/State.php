@@ -8,27 +8,30 @@ use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use TTBooking\WBEngine\Casts\Query;
 use TTBooking\WBEngine\Casts\Result;
+use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
 
 /**
- * @property non-empty-string $uuid
- * @property non-empty-string|null $parent_uuid
+ * @template TResult of ResultInterface
+ *
+ * @property string $uuid
+ * @property string $session_uuid
  * @property string $base_uri
  * @property string $endpoint
- * @property QueryInterface $query
- * @property ResultInterface $result
+ * @property QueryInterface<TResult> $query
+ * @property TResult $result
  * @property array|null $appendix
  * @property Carbon $created_at
  * @property Carbon $updated_at
- * @property static|null $parent
- * @property Collection<int, static> $children
+ * @property Collection<int, static> $session
+ *
+ * @implements StorableState<TResult>
  */
-class State extends Model
+class State extends Model implements StorableState
 {
     use HasUuids;
 
@@ -43,18 +46,80 @@ class State extends Model
     ];
 
     /**
-     * @return BelongsTo<static, static>
-     */
-    public function parent(): BelongsTo
-    {
-        return $this->belongsTo(static::class);
-    }
-
-    /**
      * @return HasMany<static>
      */
-    public function children(): HasMany
+    public function session(): HasMany
     {
-        return $this->hasMany(static::class, 'parent_uuid');
+        return $this->hasMany(static::class, 'session_uuid', 'session_uuid');
+    }
+
+    public function setId(string $id): static
+    {
+        $this->uuid = $id;
+
+        return $this;
+    }
+
+    public function getId(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function setSessionId(string $sessionId): static
+    {
+        $this->session_uuid = $sessionId;
+
+        return $this;
+    }
+
+    public function getSessionId(): ?string
+    {
+        return $this->session_uuid;
+    }
+
+    public function setBaseUri(string $baseUri): static
+    {
+        $this->base_uri = $baseUri;
+
+        return $this;
+    }
+
+    public function getBaseUri(): string
+    {
+        return $this->base_uri;
+    }
+
+    public function setLegacy(bool $legacy = true): static
+    {
+        return $this;
+    }
+
+    public function isLegacy(): bool
+    {
+        return true;
+    }
+
+    public function setQuery(QueryInterface $query): static
+    {
+        $this->query = $query;
+
+        return $this;
+    }
+
+    public function getQuery(): QueryInterface
+    {
+        return $this->query;
+    }
+
+    public function setResult(ResultInterface $result): static
+    {
+        $this->result = $result;
+
+        return $this;
+    }
+
+    public function getResult(): ResultInterface
+    {
+        return $this->result;
     }
 }

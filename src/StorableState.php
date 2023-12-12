@@ -8,30 +8,35 @@ namespace TTBooking\WBEngine;
  * @template TResult of ResultInterface
  *
  * @extends State<TResult>
+ * @implements Contracts\StorableState<TResult>
  */
-class StorableState extends State
+class StorableState extends State implements Contracts\StorableState
 {
-    public ?string $id = null;
+    protected ?string $id = null;
 
-    public ?string $parentId = null;
+    protected ?string $sessionId = null;
 
-    /**
-     * @return $this
-     */
-    public function id(string $id): static
+    public function setId(string $id): static
     {
         $this->id = $id;
 
         return $this;
     }
 
-    /**
-     * @return $this
-     */
-    public function parentId(string $parentId): static
+    public function getId(): ?string
     {
-        $this->parentId = $parentId;
+        return $this->id;
+    }
+
+    public function setSessionId(string $sessionId): static
+    {
+        $this->sessionId = $sessionId;
 
         return $this;
+    }
+
+    public function getSessionId(): ?string
+    {
+        return $this->sessionId;
     }
 }
