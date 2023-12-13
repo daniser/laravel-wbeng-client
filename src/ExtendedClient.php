@@ -18,7 +18,7 @@ class ExtendedClient implements ClientInterface
     ) {
     }
 
-    public function query(QueryInterface $query): State
+    public function query(QueryInterface $query): StateInterface
     {
         return $this->pipeline
             ->send($query)
