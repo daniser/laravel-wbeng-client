@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Facades;
 
+use Illuminate\Support\Enumerable;
 use Illuminate\Support\Facades\Facade;
 use TTBooking\WBEngine\Contracts\StateStorage;
-use TTBooking\WBEngine\StorableState;
+use TTBooking\WBEngine\Contracts\StorableState;
 
 /**
  * @method static StateStorage connection(string $name = null)
@@ -14,6 +15,8 @@ use TTBooking\WBEngine\StorableState;
  * @method static bool has(string $id)
  * @method static StorableState get(string $id)
  * @method static StorableState put(StorableState $state)
+ * @method static bool hasSession(string $id)
+ * @method static Enumerable session(string $id, string $queryType = null)
  *
  * @see \TTBooking\WBEngine\StorageManager
  */
