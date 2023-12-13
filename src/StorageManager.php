@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine;
 
-use Illuminate\Support\Enumerable;
 use TTBooking\WBEngine\Contracts\StorableState;
 
 /**
@@ -29,14 +28,9 @@ class StorageManager extends Support\Manager implements Contracts\StateStorage, 
         return $this->connection()->put($state);
     }
 
-    public function hasSession(string $id): bool
+    public function session(string $id): Session
     {
-        return $this->connection()->hasSession($id);
-    }
-
-    public function session(string $id, ?string $queryType = null): Enumerable
-    {
-        return $this->connection()->session($id, $queryType);
+        return $this->connection()->session($id);
     }
 
     /**
@@ -71,11 +65,11 @@ class StorageManager extends Support\Manager implements Contracts\StateStorage, 
 
     protected function createArrayDriver(): Stores\ArrayStorage
     {
-        return new Stores\ArrayStorage;
+        return new Stores\ArrayStorage($this->container);
     }
 
     protected function createNullDriver(): Stores\NullStorage
     {
-        return new Stores\NullStorage;
+        return new Stores\NullStorage($this->container);
     }
 }
