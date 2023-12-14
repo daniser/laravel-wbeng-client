@@ -53,14 +53,8 @@ class ExtendedStorage implements SessionFactory, StateStorage
 
     public function session(string $id, ?string $connection = null): Client
     {
-        $client = clone $this->clientFactory->connection($connection);
-
-        if ($initialState = $this->where(['sessionId' => $id])->first()) {
-            $client
-                ->setBaseUri($initialState->getBaseUri())
-                ->setDefaultContext($initialState->getQuery()->getContext());
-        }
-
-        return $client;
+        return $this->clientFactory->connection($connection)->continue(
+            $this->where(['sessionId' => $id])->first()
+        );
     }
 }
