@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Stores;
 
-use Illuminate\Support\Enumerable;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
+use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\ResultInterface;
 
-class ArrayStorage extends StateStorage
+class ArrayStorage implements StateStorage
 {
     /** @var array<string, StorableState<ResultInterface>> */
     protected array $states = [];
@@ -36,8 +37,25 @@ class ArrayStorage extends StateStorage
         return $this->states[$id] = $this->sessions[$sessionId][$id] = $state->setId($id)->setSessionId($sessionId);
     }
 
-    protected function getSessionHistory(string $id): Enumerable
+    /**
+     * @return Collection<string, StorableState<ResultInterface>>
+     */
+    public function where(array $conditions): Collection
     {
-        return collect($this->sessions[$id]);
+        foreach ($conditions as $key => $value) {
+            if ($key === 'sessionId') {
+                return collect($this->sessions[$value]);
+            }
+        }
+
+        return collect();
+    }
+
+    /**
+     * @return Collection<string, StorableState<ResultInterface>>
+     */
+    public function all(): Collection
+    {
+        return collect($this->states);
     }
 }

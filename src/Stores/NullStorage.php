@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Stores;
 
-use Illuminate\Support\Enumerable;
+use Illuminate\Support\Collection;
+use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
+use TTBooking\WBEngine\ResultInterface;
 
-class NullStorage extends StateStorage
+class NullStorage implements StateStorage
 {
     public function has(string $id): bool
     {
@@ -25,7 +27,18 @@ class NullStorage extends StateStorage
         return $state;
     }
 
-    protected function getSessionHistory(string $id): Enumerable
+    /**
+     * @return Collection<string, StorableState<ResultInterface>>
+     */
+    public function where(array $conditions): Collection
+    {
+        return collect();
+    }
+
+    /**
+     * @return Collection<string, StorableState<ResultInterface>>
+     */
+    public function all(): Collection
     {
         return collect();
     }

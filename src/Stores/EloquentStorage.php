@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Stores;
 
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Support\Enumerable;
+use Illuminate\Support\LazyCollection;
+use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\Models\State;
 use TTBooking\WBEngine\ResultInterface;
 
-class EloquentStorage extends StateStorage
+class EloquentStorage implements StateStorage
 {
     /** @var State<ResultInterface> */
     protected State $model;
@@ -20,10 +20,8 @@ class EloquentStorage extends StateStorage
     /**
      * @param  State<ResultInterface>|class-string<State<ResultInterface>>  $model
      */
-    public function __construct(Container $container, State|string $model = State::class)
+    public function __construct(State|string $model = State::class)
     {
-        parent::__construct($container);
-
         $this->model = is_string($model) ? new $model : $model;
     }
 
@@ -65,8 +63,25 @@ class EloquentStorage extends StateStorage
         ]);
     }
 
-    protected function getSessionHistory(string $id): Enumerable
+    /**
+     * @return LazyCollection<string, State<ResultInterface>>
+     */
+    public function where(array $conditions): LazyCollection
     {
-        return $this->model->newQuery()->where('session_uuid', $id)->get()->keyBy('uuid');
+        foreach ($conditions as $key => $value) {
+            if ($key === 'sessionId') {
+                return $this->model->newQuery()->where('session_uuid', $value)->lazyById()->keyBy('uuid');
+            }
+        }
+
+        return LazyCollection::empty();
+    }
+
+    /**
+     * @return LazyCollection<string, State<ResultInterface>>
+     */
+    public function all(): LazyCollection
+    {
+        return $this->model->newQuery()->lazyById()->keyBy('uuid');
     }
 }

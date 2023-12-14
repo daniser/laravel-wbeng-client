@@ -4,15 +4,14 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Stores;
 
-use Illuminate\Contracts\Container\Container;
 use Illuminate\Support\Enumerable;
+use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 
-class FilesystemStorage extends StateStorage
+class FilesystemStorage implements StateStorage
 {
-    public function __construct(Container $container, protected string $path = 'wbeng/state')
+    public function __construct(protected string $path = 'wbeng/state')
     {
-        parent::__construct($container);
     }
 
     public function has(string $id): bool
@@ -30,8 +29,13 @@ class FilesystemStorage extends StateStorage
         // TODO: Implement put() method.
     }
 
-    protected function getSessionHistory(string $id): Enumerable
+    public function where(array $conditions): Enumerable
     {
-        // TODO: Implement getSessionHistory() method.
+        // TODO: Implement where() method.
+    }
+
+    public function all(): Enumerable
+    {
+        // TODO: Implement all() method.
     }
 }

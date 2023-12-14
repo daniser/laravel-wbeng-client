@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Contracts;
 
+use Illuminate\Support\Enumerable;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\ResultInterface;
-use TTBooking\WBEngine\Session;
 
 interface StateStorage
 {
@@ -25,5 +25,14 @@ interface StateStorage
      */
     public function put(StorableState $state): StorableState;
 
-    public function session(string $id): Session;
+    /**
+     * @param  array<string, mixed>  $conditions
+     * @return Enumerable<string, StorableState<ResultInterface>>
+     */
+    public function where(array $conditions): Enumerable;
+
+    /**
+     * @return Enumerable<string, StorableState<ResultInterface>>
+     */
+    public function all(): Enumerable;
 }

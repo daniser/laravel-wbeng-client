@@ -8,6 +8,9 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
+use TTBooking\WBEngine\Contracts\ClientFactory;
+use TTBooking\WBEngine\Contracts\StateStorage;
+use TTBooking\WBEngine\Contracts\StorageFactory;
 
 class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -61,7 +64,7 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->alias('wbeng-serializer', SerializerInterface::class);
 
         $this->app->singleton('wbeng-client.connection', static fn ($app) => $app['wbeng-client']->connection());
-        $this->app->alias('wbeng-client', Contracts\ClientFactory::class);
+        $this->app->alias('wbeng-client', ClientFactory::class);
         $this->app->alias('wbeng-client.connection', ClientInterface::class);
         $this->app->alias('wbeng-client.connection', AsyncClientInterface::class);
 
@@ -73,8 +76,12 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
         });
 
         $this->app->singleton('wbeng-store.store', static fn ($app) => $app['wbeng-store']->connection());
-        $this->app->alias('wbeng-store', Contracts\StorageFactory::class);
-        $this->app->alias('wbeng-store.store', Contracts\StateStorage::class);
+        $this->app->alias('wbeng-store', StorageFactory::class);
+        $this->app->alias('wbeng-store.store', StateStorage::class);
+
+        $this->app->extend(StateStorage::class, static function (StateStorage $storage, Container $container) {
+            return $container->make(ExtendedStorage::class, compact('storage'));
+        });
     }
 
     /**
@@ -88,9 +95,9 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
             StateInterface::class,
             'wbeng-serializer', SerializerInterface::class,
             'wbeng-client', 'wbeng-client.connection',
-            Contracts\ClientFactory::class, ClientInterface::class, AsyncClientInterface::class,
+            ClientFactory::class, ClientInterface::class, AsyncClientInterface::class,
             'wbeng-store', 'wbeng-store.store',
-            Contracts\StorageFactory::class, Contracts\StateStorage::class,
+            StorageFactory::class, StateStorage::class,
         ];
     }
 }

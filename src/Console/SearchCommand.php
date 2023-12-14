@@ -15,10 +15,10 @@ use TTBooking\WBEngine\DTO\CreateBooking\Result as CBResult;
 use TTBooking\WBEngine\DTO\Enums\Gender;
 use TTBooking\WBEngine\DTO\Enums\PassengerType;
 
-use function Laravel\Prompts\{ note, search, select, spin, table, text, warning };
+use function Laravel\Prompts\{note, search, select, spin, table, text, warning};
 use function TTBooking\WBEngine\Functional\a\passenger;
-use function TTBooking\WBEngine\Functional\do\{ book, choose, fly };
-use function TTBooking\WBEngine\{ data_get, trans_enum_cases };
+use function TTBooking\WBEngine\Functional\do\{book, choose, fly};
+use function TTBooking\WBEngine\{data_get, trans_enum_cases};
 
 #[AsCommand(
     name: 'wbeng:search',
@@ -107,7 +107,7 @@ class SearchCommand extends Command
     /**
      * @param  null|callable(string): array<string, string>  $prompter
      */
-    protected function getDepartureLocation(callable $prompter = null): string
+    protected function getDepartureLocation(?callable $prompter = null): string
     {
         /** @var string */
         return $this->argument('from') ?? static::getLocation(
@@ -121,7 +121,7 @@ class SearchCommand extends Command
     /**
      * @param  null|callable(string): array<string, string>  $prompter
      */
-    protected function getArrivalLocation(callable $prompter = null): string
+    protected function getArrivalLocation(?callable $prompter = null): string
     {
         /** @var string */
         return $this->argument('to') ?? static::getLocation(
@@ -135,7 +135,7 @@ class SearchCommand extends Command
     /**
      * @param  null|callable(string): array<string, string>  $prompter
      */
-    protected static function getLocation(string $label, callable $prompter = null, string $placeholder = '', string $hint = ''): string
+    protected static function getLocation(string $label, ?callable $prompter = null, string $placeholder = '', string $hint = ''): string
     {
         $parts = explode('|', $placeholder);
 

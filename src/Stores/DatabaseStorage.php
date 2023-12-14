@@ -8,20 +8,20 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Database\ConnectionInterface;
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Str;
+use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\ResultInterface;
 use TTBooking\WBEngine\SerializerInterface;
 
-class DatabaseStorage extends StateStorage
+class DatabaseStorage implements StateStorage
 {
     public function __construct(
-        Container $container,
+        protected Container $container,
         protected SerializerInterface $serializer,
         protected ConnectionInterface $connection,
         protected string $table = 'wbeng_state',
     ) {
-        parent::__construct($container);
     }
 
     public function has(string $id): bool
@@ -64,8 +64,13 @@ class DatabaseStorage extends StateStorage
         return $state->setId($id)->setSessionId($sessionId);
     }
 
-    protected function getSessionHistory(string $id): Enumerable
+    public function where(array $conditions): Enumerable
     {
-        //
+        // TODO: Implement where() method.
+    }
+
+    public function all(): Enumerable
+    {
+        // TODO: Implement all() method.
     }
 }

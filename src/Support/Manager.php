@@ -58,7 +58,7 @@ abstract class Manager implements Factory
         return $this->config->get($this->getSelectorKey(), 'default');
     }
 
-    public function connection(string $name = null): object
+    public function connection(?string $name = null): object
     {
         $name ??= $this->getDefaultDriver();
 
@@ -123,6 +123,7 @@ abstract class Manager implements Factory
      * Call a custom driver creator.
      *
      * @param  array<string, mixed>  $config
+     *
      * @phpstan-return TConnection
      */
     protected function callCustomCreator(array $config, string $driver): object
