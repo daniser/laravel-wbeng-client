@@ -57,8 +57,7 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
      */
     protected function createEloquentDriver(array $config): ExtendedStorage
     {
-        /** @var ExtendedStorage<Stores\EloquentStorage> */
-        return $this->container->make(Stores\EloquentStorage::class, $config);
+        return $this->createDriver(Stores\EloquentStorage::class, $config);
     }
 
     /**
@@ -69,8 +68,7 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
      */
     protected function createDatabaseDriver(array $config): ExtendedStorage
     {
-        /** @var ExtendedStorage<Stores\DatabaseStorage> */
-        return $this->container->make(Stores\DatabaseStorage::class, $config);
+        return $this->createDriver(Stores\DatabaseStorage::class, $config);
     }
 
     /**
@@ -81,8 +79,7 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
      */
     protected function createFilesystemDriver(array $config): ExtendedStorage
     {
-        /** @var ExtendedStorage<Stores\FilesystemStorage> */
-        return $this->container->make(Stores\FilesystemStorage::class, $config);
+        return $this->createDriver(Stores\FilesystemStorage::class, $config);
     }
 
     /**
@@ -92,8 +89,7 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
      */
     protected function createArrayDriver(): ExtendedStorage
     {
-        /** @var ExtendedStorage<Stores\ArrayStorage> */
-        return $this->container->make(Stores\ArrayStorage::class);
+        return $this->createDriver(Stores\ArrayStorage::class);
     }
 
     /**
@@ -103,7 +99,22 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
      */
     protected function createNullDriver(): ExtendedStorage
     {
-        /** @var ExtendedStorage<Stores\NullStorage> */
-        return $this->container->make(Stores\NullStorage::class);
+        return $this->createDriver(Stores\NullStorage::class);
+    }
+
+    /**
+     * @template T of StateStorage
+     *
+     * @param  class-string<T>  $driver
+     * @param  array<string, mixed>  $config
+     * @return ExtendedStorage<T>
+     *
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function createDriver(string $driver, array $config = []): ExtendedStorage
+    {
+        return $this->container->make(ExtendedStorage::class, [
+            'storage' => $this->container->make($driver, $config),
+        ]);
     }
 }
