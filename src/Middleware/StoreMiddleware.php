@@ -7,12 +7,16 @@ namespace TTBooking\WBEngine\Middleware;
 use Closure;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
+use TTBooking\WBEngine\Contracts\StorageFactory;
 use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
 
 class StoreMiddleware
 {
-    public function __construct(protected StateStorage $storage)
+    /**
+     * @param  StorageFactory<StateStorage>  $storageFactory
+     */
+    public function __construct(protected StorageFactory $storageFactory)
     {
     }
 
@@ -23,10 +27,10 @@ class StoreMiddleware
      * @param  Closure(QueryInterface<TResult>): StorableState<TResult>  $next
      * @return StorableState<TResult>
      */
-    public function handle(QueryInterface $query, Closure $next): StorableState
+    public function handle(QueryInterface $query, Closure $next, ?string $connection = null): StorableState
     {
         $state = $next($query);
 
-        return $this->storage->put($state);
+        return $this->storageFactory->connection($connection)->put($state);
     }
 }
