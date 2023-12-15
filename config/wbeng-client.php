@@ -2,6 +2,9 @@
 
 use TTBooking\WBEngine\DTO\Enums\RespondType;
 
+/** @var string $store */
+$store = env('WB_STORAGE', 'eloquent');
+
 return [
 
     /*
@@ -37,12 +40,12 @@ return [
     |         "array", "null"
     */
 
-    'store' => env('WB_STORAGE', 'aggregate'),
+    'store' => str_contains($store, ',') ? 'aggregate' : $store,
 
     'stores' => [
 
         'aggregate' => [
-            'stores' => ['eloquent'],
+            'stores' => $store === 'aggregate' ? [] : explode(',', $store),
         ],
 
         'eloquent' => [
