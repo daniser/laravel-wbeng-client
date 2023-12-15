@@ -6,6 +6,7 @@ namespace TTBooking\WBEngine\Contracts;
 
 use Illuminate\Support\Enumerable;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
+use TTBooking\WBEngine\Exceptions\UnsupportedConditionException;
 use TTBooking\WBEngine\ResultInterface;
 
 interface StateStorage
@@ -28,6 +29,8 @@ interface StateStorage
     /**
      * @param  array<string, mixed>  $conditions
      * @return Enumerable<string, StorableState<ResultInterface>>
+     *
+     * @throws UnsupportedConditionException
      */
     public function where(array $conditions): Enumerable;
 

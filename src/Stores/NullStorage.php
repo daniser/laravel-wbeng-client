@@ -8,6 +8,7 @@ use Illuminate\Support\Collection;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
+use TTBooking\WBEngine\Exceptions\UnsupportedConditionException;
 use TTBooking\WBEngine\ResultInterface;
 
 class NullStorage implements StateStorage
@@ -32,6 +33,10 @@ class NullStorage implements StateStorage
      */
     public function where(array $conditions): Collection
     {
+        if ($conditions) {
+            throw new UnsupportedConditionException("Null storage doesn't support conditions");
+        }
+
         return collect();
     }
 

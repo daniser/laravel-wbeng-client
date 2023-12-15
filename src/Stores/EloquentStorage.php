@@ -9,6 +9,7 @@ use Illuminate\Support\LazyCollection;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
+use TTBooking\WBEngine\Exceptions\UnsupportedConditionException;
 use TTBooking\WBEngine\Models\State;
 use TTBooking\WBEngine\ResultInterface;
 
@@ -68,10 +69,12 @@ class EloquentStorage implements StateStorage
      */
     public function where(array $conditions): LazyCollection
     {
-        foreach ($conditions as $key => $value) {
-            if ($key === 'sessionId') {
-                return $this->model->newQuery()->where('session_uuid', $value)->lazyById()->keyBy('uuid');
+        foreach ($conditions as $attr => $value) {
+            if ($attr !== 'sessionId') {
+                throw new UnsupportedConditionException("Attribute [$attr] not supported in condition");
             }
+
+            return $this->model->newQuery()->where('session_uuid', $value)->lazyById()->keyBy('uuid');
         }
 
         return LazyCollection::empty();

@@ -9,6 +9,7 @@ use TTBooking\WBEngine\Contracts\ClientFactory;
 use TTBooking\WBEngine\Contracts\SessionFactory;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
+use TTBooking\WBEngine\Exceptions\UnsupportedConditionException;
 
 /**
  * @template TStateStorage of StateStorage
@@ -43,7 +44,11 @@ class ExtendedStorage implements SessionFactory, StateStorage
      */
     public function where(array $conditions): Enumerable
     {
-        return $this->storage->where($conditions);
+        try {
+            return $this->storage->where($conditions);
+        } catch (UnsupportedConditionException $e) {
+            throw $e;
+        }
     }
 
     public function all(): Enumerable
