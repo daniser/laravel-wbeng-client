@@ -50,6 +50,17 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
     }
 
     /**
+     * @param  array{stores: list<string|null>}  $config
+     * @return ExtendedStorage<Stores\AggregateStorage>
+     *
+     * @throws \Illuminate\Contracts\Container\BindingResolutionException
+     */
+    protected function createAggregateDriver(array $config): ExtendedStorage
+    {
+        return $this->createDriver(Stores\AggregateStorage::class, $config);
+    }
+
+    /**
      * @param  array{model: class-string<Models\State>}  $config
      * @return ExtendedStorage<Stores\EloquentStorage>
      *

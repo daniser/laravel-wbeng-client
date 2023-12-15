@@ -33,12 +33,17 @@ return [
     | Default WBEngine Storage Name
     |--------------------------------------------------------------------------
     |
-    | Supported drivers: "eloquent", "database", "filesystem", "array", "null"
+    | Supported drivers: "aggregate", "eloquent", "database", "filesystem",
+    |         "array", "null"
     */
 
-    'store' => env('WB_STORAGE', 'eloquent'),
+    'store' => env('WB_STORAGE', 'aggregate'),
 
     'stores' => [
+
+        'aggregate' => [
+            'stores' => ['eloquent'],
+        ],
 
         'eloquent' => [
             'model' => TTBooking\WBEngine\Models\State::class,

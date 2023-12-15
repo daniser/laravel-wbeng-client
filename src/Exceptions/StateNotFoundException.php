@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Exceptions;
 
-use Illuminate\Database\RecordsNotFoundException;
+use Illuminate\Support\ItemNotFoundException;
 
-class StateNotFoundException extends RecordsNotFoundException
+class StateNotFoundException extends ItemNotFoundException
 {
 }

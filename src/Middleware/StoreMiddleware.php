@@ -29,8 +29,6 @@ class StoreMiddleware
      */
     public function handle(QueryInterface $query, Closure $next, ?string $connection = null): StorableState
     {
-        $state = $next($query);
-
-        return $this->storageFactory->connection($connection)->put($state);
+        return $this->storageFactory->connection($connection)->put($next($query));
     }
 }
