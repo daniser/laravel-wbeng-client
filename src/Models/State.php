@@ -46,6 +46,14 @@ class State extends Model implements StorableState
     ];
 
     /**
+     * @return list<string>
+     */
+    public function uniqueIds(): array
+    {
+        return ['uuid', 'session_uuid'];
+    }
+
+    /**
      * @return HasMany<static>
      */
     public function session(): HasMany
