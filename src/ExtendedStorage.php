@@ -59,7 +59,7 @@ class ExtendedStorage implements SessionFactory, StateStorage
     public function session(string $id, ?string $connection = null): Client
     {
         return $this->clientFactory->connection($connection)->continue(
-            $this->where(['sessionId' => $id])->first()
+            $this->where([StorableState::ATTR_SESSION_ID => $id])->first()
         );
     }
 }
