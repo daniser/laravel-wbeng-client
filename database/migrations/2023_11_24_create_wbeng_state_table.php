@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('endpoint', 32)->index();
             $table->json('query');
             $table->json('result');
-            $table->json('appendix')->nullable();
+            $table->json('attrs')->nullable();
             $table->timestamp('created_at')->useCurrent();
             $table->timestamp('updated_at')->useCurrent()->useCurrentOnUpdate();
         });

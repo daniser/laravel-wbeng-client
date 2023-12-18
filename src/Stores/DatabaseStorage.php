@@ -47,7 +47,8 @@ class DatabaseStorage implements StateStorage
             ->setSessionId($record['session_uuid'])
             ->setBaseUri($record['base_uri'])
             ->setQuery($record['query'])
-            ->setResult($record['result']);
+            ->setResult($record['result'])
+            ->setAttrs($record['attrs']);
     }
 
     public function put(StorableState $state): StorableState
@@ -59,6 +60,7 @@ class DatabaseStorage implements StateStorage
             'endpoint' => $state->getQuery()::getEndpoint(),
             'query' => $this->serializer->serialize($state->getQuery()),
             'result' => $this->serializer->serialize($state->getResult()),
+            'attrs' => json_encode($state->getAttrs()),
         ]);
 
         return $state->setId($id)->setSessionId($sessionId);

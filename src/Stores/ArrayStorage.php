@@ -9,7 +9,6 @@ use Illuminate\Support\Str;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
-use TTBooking\WBEngine\Exceptions\UnsupportedConditionException;
 use TTBooking\WBEngine\ResultInterface;
 
 class ArrayStorage implements StateStorage
@@ -43,15 +42,19 @@ class ArrayStorage implements StateStorage
      */
     public function where(array $conditions): Collection
     {
-        foreach ($conditions as $attr => $value) {
-            if ($attr !== 'sessionId') {
-                throw new UnsupportedConditionException("Attribute [$attr] not supported in condition");
-            }
+        /** @var Collection<string, StorableState<ResultInterface>> $states */
+        $states = collect(array_key_exists(StorableState::ATTR_SESSION_ID, $conditions)
+            ? $this->sessions[$conditions[StorableState::ATTR_SESSION_ID]]
+            : $this->states
+        );
 
-            return collect($this->sessions[$value]);
+        unset($conditions[StorableState::ATTR_SESSION_ID]);
+
+        foreach ($conditions as $attribute => $value) {
+            $states = $states->filter(static fn (StorableState $state) => $state->getAttr($attribute) === $value);
         }
 
-        return collect();
+        return $states;
     }
 
     /**

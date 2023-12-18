@@ -24,7 +24,7 @@ use TTBooking\WBEngine\ResultInterface;
  * @property string $endpoint
  * @property QueryInterface<TResult> $query
  * @property TResult $result
- * @property array|null $appendix
+ * @property array<string, mixed>|null $attrs
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Collection<int, static> $session
@@ -42,7 +42,7 @@ class State extends Model implements StorableState
     protected $casts = [
         'query' => Query::class,
         'result' => Result::class,
-        'appendix' => 'array',
+        'attrs' => 'array',
     ];
 
     /**
@@ -91,12 +91,14 @@ class State extends Model implements StorableState
 
     public function setLegacy(bool $legacy = true): static
     {
+        $this->attrs[self::ATTR_LEGACY] = $legacy;
+
         return $this;
     }
 
     public function isLegacy(): bool
     {
-        return true;
+        return (bool) ($this->attrs[self::ATTR_LEGACY] ?? true);
     }
 
     public function setQuery(QueryInterface $query): static
@@ -121,5 +123,42 @@ class State extends Model implements StorableState
     public function getResult(): ResultInterface
     {
         return $this->result;
+    }
+
+    public function setAttrs(array $attributes): static
+    {
+        foreach ($attributes as $attribute => $value) {
+            $this->setAttr($attribute, $value);
+        }
+
+        return $this;
+    }
+
+    public function getAttrs(): array
+    {
+        return [
+            self::ATTR_LEGACY => $this->isLegacy(),
+            self::ATTR_SESSION_ID => $this->getSessionId(),
+        ] + ($this->attrs ?? []);
+    }
+
+    public function setAttr(string $attribute, mixed $value): static
+    {
+        match ($attribute) {
+            self::ATTR_LEGACY => $this->setLegacy($value), // @phpstan-ignore-line
+            self::ATTR_SESSION_ID => $this->setSessionId($value), // @phpstan-ignore-line
+            default => $this->attrs[$attribute] = $value,
+        };
+
+        return $this;
+    }
+
+    public function getAttr(string $attribute, mixed $default = null): mixed
+    {
+        return match ($attribute) {
+            self::ATTR_LEGACY => $this->isLegacy(),
+            self::ATTR_SESSION_ID => $this->getSessionId(),
+            default => $this->attrs[$attribute] ?? null,
+        };
     }
 }

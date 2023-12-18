@@ -14,6 +14,8 @@ use TTBooking\WBEngine\StateInterface;
  */
 interface StorableState extends StateInterface
 {
+    public const ATTR_SESSION_ID = 'session_id';
+
     /**
      * @return $this
      */

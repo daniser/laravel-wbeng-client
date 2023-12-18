@@ -14,8 +14,6 @@ class StorableState extends State implements Contracts\StorableState
 {
     protected ?string $id = null;
 
-    protected ?string $sessionId = null;
-
     public function setId(string $id): static
     {
         $this->id = $id;
@@ -30,13 +28,12 @@ class StorableState extends State implements Contracts\StorableState
 
     public function setSessionId(string $sessionId): static
     {
-        $this->sessionId = $sessionId;
-
-        return $this;
+        return $this->setAttr(self::ATTR_SESSION_ID, $sessionId);
     }
 
     public function getSessionId(): ?string
     {
-        return $this->sessionId;
+        /** @var string|null */
+        return $this->getAttr(self::ATTR_SESSION_ID);
     }
 }
