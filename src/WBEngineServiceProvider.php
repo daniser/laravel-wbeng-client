@@ -30,6 +30,7 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
 
         $this->commands([
             Console\SearchCommand::class,
+            Console\SelectCommand::class,
         ]);
 
         if ($this->app->runningInConsole()) {
