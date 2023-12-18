@@ -25,4 +25,12 @@ class ExtendedClient implements ClientInterface
             ->through($this->middleware)
             ->then($this->client->query(...));
     }
+
+    /**
+     * @param  list<mixed>  $arguments
+     */
+    public function __call(string $name, array $arguments): mixed
+    {
+        return $this->client->$name(...$arguments);
+    }
 }
