@@ -33,6 +33,7 @@ class SelectCommand extends Command
      */
     protected $signature = 'wbeng:select
         {session : Session identifier}
+        {--storage= : Using storage}
         {--connection= : Using connection}
         {--table : Present results in table form}';
 
@@ -52,13 +53,16 @@ class SelectCommand extends Command
     {
         /** @var string $session */
         $session = $this->argument('session');
-        $store = $storageFactory->connection();
-        $client = $store->session($session);
 
-        /** @var StorableState<Result>|null $state */
-        $state = $store->where([StorableState::ATTR_SESSION_ID => $session])->first();
+        /** @var string|null $storage */
+        $storage = $this->option('storage');
 
-        if (! $state) {
+        /** @var string|null $connection */
+        $connection = $this->option('connection');
+
+        $session = $storageFactory->connection($storage)->session($session, $connection);
+
+        if (! $state = $session->history()->first()) {
             warning('Session not found.');
 
             return static::FAILURE;
@@ -78,7 +82,7 @@ class SelectCommand extends Command
         $flightGroupId = $this->displayFlights($searchResult->flightGroups);
 
         $selectResult = $this->selectFlight(
-            client: $client,
+            client: $session,
             searchResult: $searchResult,
             flightGroupId: $flightGroupId,
             itineraryId: 0,
