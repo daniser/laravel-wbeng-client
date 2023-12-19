@@ -44,7 +44,7 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
         return $this->connection()->all();
     }
 
-    public function session(string $id, ?string $connection = null): Client
+    public function session(string $id, ?string $connection = null): Session
     {
         return $this->connection()->session($id, $connection);
     }
