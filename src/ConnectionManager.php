@@ -54,7 +54,7 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
         /** @var bool $legacy */
         $legacy = Arr::pull($config, 'legacy');
 
-        return $this->container->make(ClientInterface::class, [
+        return $this->container->make(Client::class, [
             'baseUri' => Arr::pull($config, 'uri'),
             'context' => new Context(...$config),
             'legacy' => $legacy,
