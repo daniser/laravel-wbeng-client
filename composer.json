@@ -64,7 +64,7 @@
     "prefer-stable": true,
     "scripts": {
         "analyse": "@php vendor/bin/phpstan analyse",
-        "lint":"@php vendor/bin/pint --test",
+        "lint": "@php vendor/bin/pint --test",
         "test": "@php vendor/bin/pest"
     }
 }
