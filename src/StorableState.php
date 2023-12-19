@@ -8,6 +8,7 @@ namespace TTBooking\WBEngine;
  * @template TResult of ResultInterface
  *
  * @extends State<TResult>
+ *
  * @implements Contracts\StorableState<TResult>
  */
 class StorableState extends State implements Contracts\StorableState

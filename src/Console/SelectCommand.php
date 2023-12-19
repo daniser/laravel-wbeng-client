@@ -11,14 +11,13 @@ use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\ClientInterface;
 use TTBooking\WBEngine\Contracts\StateStorage;
-use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Contracts\StorageFactory;
 use TTBooking\WBEngine\DTO\Common\Result;
 use TTBooking\WBEngine\ExtendedStorage;
 
 use function Laravel\Prompts\{note, select, spin, table, text, warning};
-use function TTBooking\WBEngine\Functional\do\choose;
 use function TTBooking\WBEngine\data_get;
+use function TTBooking\WBEngine\Functional\do\choose;
 
 #[AsCommand(
     name: 'wbeng:select',

@@ -63,10 +63,8 @@
     "minimum-stability": "dev",
     "prefer-stable": true,
     "scripts": {
-        "lint": [
-            "@php vendor/bin/pint --test",
-            "@php vendor/bin/phpstan analyse"
-        ],
+        "analyse": "@php vendor/bin/phpstan analyse",
+        "lint":"@php vendor/bin/pint --test",
         "test": "@php vendor/bin/pest"
     }
 }

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Casts;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
+use Illuminate\Database\Eloquent\Model;
 use TTBooking\WBEngine\EndpointQueryMap;
 use TTBooking\WBEngine\Facades\Serializer;
 use TTBooking\WBEngine\ResultInterface;
