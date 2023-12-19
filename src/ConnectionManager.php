@@ -56,8 +56,10 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
 
         return $this->container->make(Client::class, [
             'baseUri' => Arr::pull($config, 'uri'),
-            'context' => new Context(...$config),
-            'legacy' => $legacy,
+            'defaultContext' => new Context(...$config),
+            'defaultAttributes' => [
+                StateInterface::ATTR_LEGACY => $legacy,
+            ],
         ]);
     }
 }
