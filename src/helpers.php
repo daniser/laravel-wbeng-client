@@ -12,7 +12,7 @@ use TTBooking\WBEngine\Facades\Storage;
 use TTBooking\WBEngine\Facades\WBEngine;
 use UnitEnum;
 
-function wbeng(?string $connection = null): Client
+function wbeng(?string $connection = null): ClientInterface
 {
     return WBEngine::connection($connection);
 }

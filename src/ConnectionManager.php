@@ -11,11 +11,16 @@ use TTBooking\WBEngine\DTO\Common\Query\Context;
 use TTBooking\WBEngine\DTO\Enums\RespondType;
 
 /**
- * @extends Support\Manager<Client>
+ * @extends Support\Manager<ClientInterface>
  */
-class ConnectionManager extends Support\Manager implements AsyncClientInterface, ClientInterface, Contracts\ClientFactory
+class ConnectionManager extends Support\Manager implements ClientInterface, Contracts\ClientFactory
 {
     protected string $selectorKey = 'wbeng-client.connection';
+
+    public function continue(?StateInterface $state = null): ClientInterface
+    {
+        return $this->connection()->continue($state);
+    }
 
     public function query(QueryInterface $query): StateInterface
     {
@@ -49,7 +54,7 @@ class ConnectionManager extends Support\Manager implements AsyncClientInterface,
         /** @var bool $legacy */
         $legacy = Arr::pull($config, 'legacy');
 
-        return $this->container->make(Client::class, [
+        return $this->container->make(ClientInterface::class, [
             'baseUri' => Arr::pull($config, 'uri'),
             'context' => new Context(...$config),
             'legacy' => $legacy,

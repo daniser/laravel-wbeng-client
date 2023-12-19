@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine;
 
+use Http\Promise\Promise;
 use Illuminate\Contracts\Pipeline\Pipeline;
 
 class ExtendedClient implements ClientInterface
@@ -18,12 +19,25 @@ class ExtendedClient implements ClientInterface
     ) {
     }
 
+    public function continue(?StateInterface $state = null): ClientInterface
+    {
+        return $this->client->continue($state);
+    }
+
     public function query(QueryInterface $query): StateInterface
     {
         return $this->pipeline
             ->send($query)
             ->through($this->middleware)
             ->then($this->client->query(...));
+    }
+
+    public function asyncQuery(QueryInterface $query): Promise
+    {
+        return $this->pipeline
+            ->send($query)
+            ->through($this->middleware)
+            ->then($this->client->asyncQuery(...));
     }
 
     /**

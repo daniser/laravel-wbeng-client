@@ -64,7 +64,6 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->singleton('wbeng-client.connection', static fn ($app) => $app['wbeng-client']->connection());
         $this->app->alias('wbeng-client', Contracts\ClientFactory::class);
         $this->app->alias('wbeng-client.connection', ClientInterface::class);
-        $this->app->alias('wbeng-client.connection', AsyncClientInterface::class);
 
         $this->app->extend(Client::class, static function (Client $client, Container $container) {
             /** @var list<class-string> $middleware */
@@ -90,7 +89,7 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
             StateInterface::class,
             'wbeng-serializer', SerializerInterface::class,
             'wbeng-client', 'wbeng-client.connection',
-            Contracts\ClientFactory::class, ClientInterface::class, AsyncClientInterface::class,
+            Contracts\ClientFactory::class, ClientInterface::class,
             'wbeng-store', 'wbeng-store.store',
             Contracts\StorageFactory::class, Contracts\SessionFactory::class, Contracts\StateStorage::class,
         ];

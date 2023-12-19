@@ -6,13 +6,13 @@ namespace TTBooking\WBEngine\Facades;
 
 use Http\Promise\Promise;
 use Illuminate\Support\Facades\Facade;
-use TTBooking\WBEngine\Client;
+use TTBooking\WBEngine\ClientInterface;
 use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\StateInterface;
 
 /**
- * @method static Client connection(string $name = null)
- * @method static Client[] getConnections()
+ * @method static ClientInterface connection(string $name = null)
+ * @method static ClientInterface[] getConnections()
  * @method static StateInterface query(QueryInterface $query)
  * @method static Promise asyncQuery(QueryInterface $query)
  *
