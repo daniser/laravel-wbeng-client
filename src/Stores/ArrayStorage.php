@@ -44,7 +44,7 @@ class ArrayStorage implements StateStorage
     {
         /** @var Collection<string, StorableState<ResultInterface>> $states */
         $states = collect(array_key_exists(StorableState::ATTR_SESSION_ID, $conditions)
-            ? $this->sessions[$conditions[StorableState::ATTR_SESSION_ID]]
+            ? $this->sessions[$conditions[StorableState::ATTR_SESSION_ID]] ?? []
             : $this->states
         );
 
