@@ -19,9 +19,9 @@ class ExtendedClient implements ClientInterface
     ) {
     }
 
-    public function continue(?StateInterface $state = null): ClientInterface
+    public function continue(?StateInterface $state = null): self
     {
-        return $this->client->continue($state);
+        return new self($this->client->continue($state), $this->pipeline, $this->middleware);
     }
 
     public function query(QueryInterface $query): StateInterface

@@ -18,9 +18,9 @@ class Session implements ClientInterface
         $this->client = $client->continue($history->first());
     }
 
-    public function continue(?StateInterface $state = null): ClientInterface
+    public function continue(?StateInterface $state = null): self
     {
-        return $this->client->continue($state);
+        return new self($this->history, $this->client->continue($state));
     }
 
     public function query(QueryInterface $query): StateInterface
