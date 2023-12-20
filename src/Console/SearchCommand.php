@@ -9,11 +9,13 @@ use Illuminate\Support\Collection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
+use TTBooking\WBEngine\ClientInterface;
 use TTBooking\WBEngine\Contracts\ClientFactory;
 use TTBooking\WBEngine\DTO\Common\Result;
 use TTBooking\WBEngine\DTO\CreateBooking\Result as CBResult;
 use TTBooking\WBEngine\DTO\Enums\Gender;
 use TTBooking\WBEngine\DTO\Enums\PassengerType;
+use TTBooking\WBEngine\StateInterface;
 
 use function Laravel\Prompts\{note, search, select, spin, table, text, warning};
 use function TTBooking\WBEngine\Functional\a\passenger;
@@ -53,12 +55,19 @@ class SearchCommand extends Command
         /** @var null|callable(string): array<string, string> $prompter */
         $prompter = config('wbeng-client.iata_location_prompter');
 
-        $searchResult = $this->searchFlights(
-            clientFactory: $clientFactory,
+        /** @var string $connection */
+        $connection = $this->option('connection');
+
+        $client = $clientFactory->connection($connection);
+
+        $searchState = $this->searchFlights(
+            client: $client,
             origin: $this->getDepartureLocation($prompter),
             destination: $this->getArrivalLocation($prompter),
             date: $this->getDepartureDate(),
         );
+
+        $searchResult = $searchState->getResult();
 
         static::displayStatus($searchResult->context);
         static::displayMessages($searchResult->messages);
@@ -71,13 +80,15 @@ class SearchCommand extends Command
 
         $flightGroupId = $this->displayFlights($searchResult->flightGroups);
 
-        $selectResult = $this->selectFlight(
-            clientFactory: $clientFactory,
+        $selectState = $this->selectFlight(
+            client: $client->continue($searchState),
             searchResult: $searchResult,
             flightGroupId: $flightGroupId,
             itineraryId: 0,
             flightId: 0,
         );
+
+        $selectResult = $selectState->getResult();
 
         static::displayStatus($selectResult->context);
         static::displayMessages($selectResult->messages);
@@ -164,24 +175,24 @@ class SearchCommand extends Command
         );
     }
 
-    protected function searchFlights(ClientFactory $clientFactory, string $origin, string $destination, string $date): Result
+    /**
+     * @return StateInterface<Result>
+     */
+    protected function searchFlights(ClientInterface $client, string $origin, string $destination, string $date): StateInterface
     {
-        /** @var string $connection */
-        $connection = $this->option('connection');
-
-        return spin(fn (): Result => $clientFactory->connection($connection)->query(
+        return spin(fn (): StateInterface => $client->query(
             fly()->from($origin)->to($destination)->on($date)//->sortByPrice()
-        )->getResult(), 'Searching flights...');
+        ), 'Searching flights...');
     }
 
-    protected function selectFlight(ClientFactory $clientFactory, Result $searchResult, int $flightGroupId, int $itineraryId, int $flightId): Result
+    /**
+     * @return StateInterface<Result>
+     */
+    protected function selectFlight(ClientInterface $client, Result $searchResult, int $flightGroupId, int $itineraryId, int $flightId): StateInterface
     {
-        /** @var string $connection */
-        $connection = $this->option('connection');
-
-        return spin(fn (): Result => $clientFactory->connection($connection)->query(
+        return spin(fn (): StateInterface => $client->query(
             choose()->fromSearchResult($searchResult, $flightGroupId, $itineraryId, $flightId)
-        )->getResult(), 'Checking availability...');
+        ), 'Checking availability...');
     }
 
     protected static function getCustomerName(): string
