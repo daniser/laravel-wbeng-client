@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine;
 
 use Illuminate\Support\Arr;
+use UnexpectedValueException;
 
 final class EndpointQueryMap
 {
@@ -19,11 +20,22 @@ final class EndpointQueryMap
     /** @var array<string, class-string<QueryInterface<ResultInterface>>> */
     private static array $map;
 
-    public static function getQueryClassFromEndpoint(string $endpoint): ?string
+    /**
+     * @return class-string<QueryInterface<ResultInterface>>
+     */
+    public static function getQueryClassFromEndpoint(string $endpoint): string
     {
         self::$map ??= self::buildMapFromQueries();
 
-        return self::$map[$endpoint] ?? null;
+        return self::$map[$endpoint] ?? throw new UnexpectedValueException("Endpoint [$endpoint] doesn't exist");
+    }
+
+    /**
+     * @return class-string<ResultInterface>
+     */
+    public static function getResultClassFromEndpoint(string $endpoint): string
+    {
+        return self::getQueryClassFromEndpoint($endpoint)::getResultType();
     }
 
     /**

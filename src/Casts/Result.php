@@ -20,7 +20,7 @@ class Result implements CastsAttributes
     public function get(Model $model, string $key, mixed $value, array $attributes): ?ResultInterface
     {
         /** @var TResult */
-        return Serializer::deserialize($value, EndpointQueryMap::getQueryClassFromEndpoint($attributes['endpoint']));
+        return Serializer::deserialize($value, EndpointQueryMap::getResultClassFromEndpoint($attributes['endpoint']));
     }
 
     public function set(Model $model, string $key, mixed $value, array $attributes): string
