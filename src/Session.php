@@ -6,9 +6,10 @@ namespace TTBooking\WBEngine;
 
 use Http\Promise\Promise;
 use Illuminate\Support\Enumerable;
+use TTBooking\WBEngine\Contracts\Session as SessionContract;
 use TTBooking\WBEngine\Contracts\StorableState;
 
-class Session implements ClientInterface
+class Session implements SessionContract
 {
     /**
      * @param  Enumerable<string, StorableState<ResultInterface>>  $history
@@ -33,9 +34,6 @@ class Session implements ClientInterface
         return $this->client->asyncQuery($query);
     }
 
-    /**
-     * @return Enumerable<string, StorableState<ResultInterface>>
-     */
     public function history(): Enumerable
     {
         return $this->history;

@@ -7,9 +7,9 @@ namespace TTBooking\WBEngine\Support;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Routing\Route;
 use Illuminate\Support\Str;
+use TTBooking\WBEngine\Contracts\Session;
 use TTBooking\WBEngine\Exceptions\SessionNotFoundException;
 use TTBooking\WBEngine\Facades\Storage;
-use TTBooking\WBEngine\Session;
 
 class SessionRouteBinding
 {

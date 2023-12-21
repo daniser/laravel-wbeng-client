@@ -10,7 +10,7 @@ use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
-class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvider
+class WBEngineServiceProvider extends ServiceProvider //implements DeferrableProvider
 {
     /**
      * All of the container singletons that should be registered.
