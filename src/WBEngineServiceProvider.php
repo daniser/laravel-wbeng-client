@@ -27,6 +27,7 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
      */
     public function boot(): void
     {
+        $this->registerRouteBindingCallback();
         $this->registerRoutes();
         $this->registerResources();
         $this->registerCommands();
@@ -35,6 +36,14 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
             $this->offerPublishing();
             $this->registerMigrations();
         }
+    }
+
+    /**
+     * Register the WBEngine Client implicit session resolution callback.
+     */
+    protected function registerRouteBindingCallback(): void
+    {
+        Route::substituteImplicitBindingsUsing(Support\SessionRouteBinding::resolveForRoute(...));
     }
 
     /**
