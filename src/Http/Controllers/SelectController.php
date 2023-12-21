@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use TTBooking\WBEngine\Http\Requests\SelectRequest;
 use TTBooking\WBEngine\Session;
+
 use function TTBooking\WBEngine\Functional\do\choose;
 
 class SelectController extends Controller

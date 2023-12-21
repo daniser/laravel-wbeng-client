@@ -8,6 +8,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use TTBooking\WBEngine\ClientInterface;
 use TTBooking\WBEngine\Http\Requests\SearchRequest;
+
 use function TTBooking\WBEngine\Functional\do\fly;
 
 class SearchController extends Controller
