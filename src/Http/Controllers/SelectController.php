@@ -18,12 +18,12 @@ class SelectController extends Controller
      */
     public function __invoke(SelectRequest $request, Session $session): JsonResponse
     {
-        $result = $session->history()->first()?->getResult();
+        $searchResult = $session->history()->first()?->getResult();
 
-        $state = $result ?? $session->query(
-            choose()->fromSearchResult($result, 0, 0, 0)
-        );
+        $result = $session->query(
+            choose()->fromSearchResult($searchResult, 0, 0, 0)
+        )->getResult();
 
-        return new JsonResponse($state);
+        return new JsonResponse($result);
     }
 }

@@ -18,10 +18,10 @@ class SearchController extends Controller
      */
     public function __invoke(SearchRequest $request, ClientInterface $client): JsonResponse
     {
-        $state = $client->query(
+        $result = $client->query(
             fly()->complex()
-        );
+        )->getResult();
 
-        return new JsonResponse($state);
+        return new JsonResponse($result);
     }
 }
