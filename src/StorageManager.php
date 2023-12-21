@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace TTBooking\WBEngine;
 
 use Illuminate\Support\Enumerable;
+use TTBooking\WBEngine\Contracts\Session;
 use TTBooking\WBEngine\Contracts\SessionFactory;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;

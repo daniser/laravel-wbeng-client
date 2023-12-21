@@ -6,9 +6,9 @@ namespace TTBooking\WBEngine\Facades;
 
 use Illuminate\Support\Enumerable;
 use Illuminate\Support\Facades\Facade;
+use TTBooking\WBEngine\Contracts\Session;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
-use TTBooking\WBEngine\Session;
 
 /**
  * @method static StateStorage connection(string $name = null)
