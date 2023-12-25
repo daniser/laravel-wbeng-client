@@ -9,6 +9,7 @@ use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\Exceptions\UnsupportedConditionException;
+use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
 
 class NullStorage implements StateStorage
@@ -29,7 +30,7 @@ class NullStorage implements StateStorage
     }
 
     /**
-     * @return Collection<string, StorableState<ResultInterface>>
+     * @return Collection<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>>
      */
     public function where(array $conditions): Collection
     {
@@ -41,7 +42,7 @@ class NullStorage implements StateStorage
     }
 
     /**
-     * @return Collection<string, StorableState<ResultInterface>>
+     * @return Collection<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>>
      */
     public function all(): Collection
     {

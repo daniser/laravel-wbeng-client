@@ -22,10 +22,12 @@ class StoreMiddleware
 
     /**
      * @template TResult of ResultInterface
+     * @template TQuery of QueryInterface<TResult>
      *
-     * @param  QueryInterface<TResult>  $query
-     * @param  Closure(QueryInterface<TResult>): StorableState<TResult>  $next
-     * @return StorableState<TResult>
+     * @phpstan-param  TQuery $query
+     *
+     * @param  Closure(TQuery): StorableState<TResult, TQuery>  $next
+     * @return StorableState<TResult, TQuery>
      */
     public function handle(QueryInterface $query, Closure $next, ?string $connection = null): StorableState
     {

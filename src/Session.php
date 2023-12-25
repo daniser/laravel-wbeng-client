@@ -12,7 +12,10 @@ use TTBooking\WBEngine\Contracts\StorableState;
 class Session implements SessionContract
 {
     /**
-     * @param  Enumerable<string, StorableState<ResultInterface>>  $history
+     * @template TState of StorableState<ResultInterface, QueryInterface<ResultInterface>>
+     *
+     * @param  Enumerable<string, TState>  $history
+     * @param  ClientInterface<TState>  $client
      */
     public function __construct(protected Enumerable $history, protected ClientInterface $client)
     {
@@ -34,8 +37,14 @@ class Session implements SessionContract
         return $this->client->asyncQuery($query);
     }
 
-    public function history(): Enumerable
+    public function history(?string $type = null): Enumerable
     {
-        return $this->history;
+        return $type
+            ? $this->history->filter(static function (StorableState $state) use ($type) {
+                return $type === $state->getQuery()::class
+                    || $type === $state->getQuery()::getResultType()
+                    || $type === $state->getQuery()::getEndpoint();
+            })
+            : $this->history;
     }
 }

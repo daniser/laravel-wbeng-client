@@ -17,19 +17,20 @@ use TTBooking\WBEngine\ResultInterface;
 
 /**
  * @template TResult of ResultInterface
+ * @template TQuery of QueryInterface<TResult>
  *
  * @property string $uuid
  * @property string $session_uuid
  * @property string $base_uri
  * @property string $endpoint
- * @property QueryInterface<TResult> $query
+ * @property TQuery $query
  * @property TResult $result
  * @property array<string, mixed>|null $attrs
  * @property Carbon $created_at
  * @property Carbon $updated_at
  * @property Collection<int, static> $session
  *
- * @implements StorableState<TResult>
+ * @implements StorableState<TResult, TQuery>
  */
 class State extends Model implements StorableState
 {

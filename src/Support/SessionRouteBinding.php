@@ -13,7 +13,7 @@ use TTBooking\WBEngine\Facades\Storage;
 
 class SessionRouteBinding
 {
-    public static function resolveForRoute(Container $container, Route $route, callable $default): Route
+    public static function resolveForRoute(Container $container, Route $route, callable $default): void
     {
         $default();
 
@@ -34,8 +34,6 @@ class SessionRouteBinding
 
             $route->setParameter($parameterName, $session);
         }
-
-        return $route;
     }
 
     /**

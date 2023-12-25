@@ -13,10 +13,12 @@ class StateMiddleware
 {
     /**
      * @template TResult of ResultInterface
+     * @template TQuery of QueryInterface<TResult>
      *
-     * @param  QueryInterface<TResult>  $query
-     * @param  Closure(QueryInterface<TResult>): StateInterface<TResult>  $next
-     * @return StateInterface<TResult>
+     * @phpstan-param  TQuery $query
+     *
+     * @param  Closure(TQuery): StateInterface<TResult, TQuery>  $next
+     * @return StateInterface<TResult, TQuery>
      */
     public function handle(QueryInterface $query, Closure $next): StateInterface
     {

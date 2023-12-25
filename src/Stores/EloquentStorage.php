@@ -11,15 +11,16 @@ use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
 use TTBooking\WBEngine\Models\State;
+use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
 
 class EloquentStorage implements StateStorage
 {
-    /** @var State<ResultInterface> */
+    /** @var State<ResultInterface, QueryInterface<ResultInterface>> */
     protected State $model;
 
     /**
-     * @param  State<ResultInterface>|class-string<State<ResultInterface>>  $model
+     * @param  State<ResultInterface, QueryInterface<ResultInterface>>|class-string<State<ResultInterface, QueryInterface<ResultInterface>>>  $model
      */
     public function __construct(State|string $model = State::class)
     {
@@ -32,7 +33,7 @@ class EloquentStorage implements StateStorage
     }
 
     /**
-     * @return State<ResultInterface>
+     * @return State<ResultInterface, QueryInterface<ResultInterface>>
      *
      * @throws StateNotFoundException
      */
@@ -45,10 +46,6 @@ class EloquentStorage implements StateStorage
         }
     }
 
-    /**
-     * @param  StorableState<ResultInterface>  $state
-     * @return State<ResultInterface>
-     */
     public function put(StorableState $state): State
     {
         if ($state instanceof State) {
@@ -67,7 +64,7 @@ class EloquentStorage implements StateStorage
     }
 
     /**
-     * @return LazyCollection<string, State<ResultInterface>>
+     * @return LazyCollection<string, State<ResultInterface, QueryInterface<ResultInterface>>>
      */
     public function where(array $conditions): LazyCollection
     {
@@ -84,7 +81,7 @@ class EloquentStorage implements StateStorage
     }
 
     /**
-     * @return LazyCollection<string, State<ResultInterface>>
+     * @return LazyCollection<string, State<ResultInterface, QueryInterface<ResultInterface>>>
      */
     public function all(): LazyCollection
     {

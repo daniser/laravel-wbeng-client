@@ -62,7 +62,7 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
     }
 
     /**
-     * @param  array{model: class-string<Models\State>}  $config
+     * @param  array{model: class-string<Models\State<ResultInterface, QueryInterface<ResultInterface>>>}  $config
      * @return ExtendedStorage<Stores\EloquentStorage>
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
@@ -115,11 +115,11 @@ class StorageManager extends Support\Manager implements SessionFactory, StateSto
     }
 
     /**
-     * @template T of StateStorage
+     * @template TStateStorage of StateStorage
      *
-     * @param  class-string<T>  $driver
+     * @param  class-string<TStateStorage>  $driver
      * @param  array<string, mixed>  $config
-     * @return ExtendedStorage<T>
+     * @return ExtendedStorage<TStateStorage>
      *
      * @throws \Illuminate\Contracts\Container\BindingResolutionException
      */

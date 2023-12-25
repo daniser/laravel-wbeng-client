@@ -11,6 +11,7 @@ use Illuminate\Support\Str;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
+use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
 use TTBooking\WBEngine\SerializerInterface;
 
@@ -39,7 +40,7 @@ class DatabaseStorage implements StateStorage
 
         $record = (array) $record;
 
-        /** @var StorableState<ResultInterface> $state */
+        /** @var StorableState<ResultInterface, QueryInterface<ResultInterface>> $state */
         $state = $this->container->make(StorableState::class);
 
         return $state
@@ -69,10 +70,14 @@ class DatabaseStorage implements StateStorage
     public function where(array $conditions): Enumerable
     {
         // TODO: Implement where() method.
+
+        return collect();
     }
 
     public function all(): Enumerable
     {
         // TODO: Implement all() method.
+
+        return collect();
     }
 }

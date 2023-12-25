@@ -6,10 +6,11 @@ namespace TTBooking\WBEngine;
 
 /**
  * @template TResult of ResultInterface
+ * @template TQuery of QueryInterface<TResult>
  *
- * @extends State<TResult>
+ * @extends State<TResult, TQuery>
  *
- * @implements Contracts\StorableState<TResult>
+ * @implements Contracts\StorableState<TResult, TQuery>
  */
 class StorableState extends State implements Contracts\StorableState
 {

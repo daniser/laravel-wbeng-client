@@ -9,14 +9,15 @@ use Illuminate\Support\Str;
 use TTBooking\WBEngine\Contracts\StateStorage;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Exceptions\StateNotFoundException;
+use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
 
 class ArrayStorage implements StateStorage
 {
-    /** @var array<string, StorableState<ResultInterface>> */
+    /** @var array<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>> */
     protected array $states = [];
 
-    /** @var array<string, array<string, StorableState<ResultInterface>>> */
+    /** @var array<string, array<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>>> */
     protected array $sessions = [];
 
     public function has(string $id): bool
@@ -38,11 +39,11 @@ class ArrayStorage implements StateStorage
     }
 
     /**
-     * @return Collection<string, StorableState<ResultInterface>>
+     * @return Collection<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>>
      */
     public function where(array $conditions): Collection
     {
-        /** @var Collection<string, StorableState<ResultInterface>> $states */
+        /** @var Collection<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>> $states */
         $states = collect(array_key_exists(StorableState::ATTR_SESSION_ID, $conditions)
             ? $this->sessions[$conditions[StorableState::ATTR_SESSION_ID]] ?? []
             : $this->states
@@ -58,7 +59,7 @@ class ArrayStorage implements StateStorage
     }
 
     /**
-     * @return Collection<string, StorableState<ResultInterface>>
+     * @return Collection<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>>
      */
     public function all(): Collection
     {

@@ -6,8 +6,9 @@ namespace TTBooking\WBEngine\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
+use TTBooking\WBEngine\Contracts\Session;
+use TTBooking\WBEngine\DTO\Common\Result;
 use TTBooking\WBEngine\Http\Requests\SelectRequest;
-use TTBooking\WBEngine\Session;
 
 use function TTBooking\WBEngine\Functional\do\choose;
 
@@ -18,7 +19,8 @@ class SelectController extends Controller
      */
     public function __invoke(SelectRequest $request, Session $session): JsonResponse
     {
-        $searchResult = $session->history()->first()?->getResult();
+        /** @var Result $searchResult */
+        $searchResult = $session->history('flights')->firstOrFail()->getResult();
 
         $result = $session->query(
             choose()->fromSearchResult($searchResult, 0, 0, 0)

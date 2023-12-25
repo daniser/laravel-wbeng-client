@@ -7,11 +7,14 @@ namespace TTBooking\WBEngine;
 use Http\Promise\Promise;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
+use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\DTO\Common\Query\Context;
 use TTBooking\WBEngine\DTO\Enums\RespondType;
 
 /**
  * @extends Support\Manager<ClientInterface>
+ *
+ * @implements ClientInterface<StorableState>
  */
 class ConnectionManager extends Support\Manager implements ClientInterface, Contracts\ClientFactory
 {
@@ -46,6 +49,7 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
      *     context_id: int|null,
      *     legacy: bool,
      * } $config
+     * @return ClientInterface<StorableState<ResultInterface, QueryInterface<ResultInterface>>>
      *
      * @throws BindingResolutionException
      */

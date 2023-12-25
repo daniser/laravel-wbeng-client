@@ -6,10 +6,15 @@ namespace TTBooking\WBEngine;
 
 use Http\Promise\Promise;
 use Illuminate\Contracts\Pipeline\Pipeline;
+use TTBooking\WBEngine\Contracts\StorableState;
 
+/**
+ * @implements ClientInterface<StorableState>
+ */
 class ExtendedClient implements ClientInterface
 {
     /**
+     * @param  ClientInterface<StorableState<ResultInterface, QueryInterface<ResultInterface>>>  $client
      * @param  list<class-string>  $middleware
      */
     public function __construct(

@@ -8,10 +8,14 @@ use Illuminate\Support\Arr;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 use TTBooking\WBEngine\Contracts\StateStorage;
+use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Facades\Storage;
 use TTBooking\WBEngine\Facades\WBEngine;
 use UnitEnum;
 
+/**
+ * @return ClientInterface<StorableState<ResultInterface, QueryInterface<ResultInterface>>>
+ */
 function wbeng(?string $connection = null): ClientInterface
 {
     return WBEngine::connection($connection);

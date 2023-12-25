@@ -4,13 +4,15 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Contracts;
 
+use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
 use TTBooking\WBEngine\StateInterface;
 
 /**
  * @template TResult of ResultInterface
+ * @template TQuery of QueryInterface<TResult>
  *
- * @extends StateInterface<TResult>
+ * @extends StateInterface<TResult, TQuery>
  */
 interface StorableState extends StateInterface
 {

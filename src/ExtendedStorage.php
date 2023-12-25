@@ -38,10 +38,6 @@ class ExtendedStorage implements SessionFactory, StateStorage
         return $this->storage->put($state);
     }
 
-    /**
-     * @param  array<string, mixed>  $conditions
-     * @return Enumerable<string, StorableState<ResultInterface>>
-     */
     public function where(array $conditions): Enumerable
     {
         try {
