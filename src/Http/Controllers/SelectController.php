@@ -6,9 +6,9 @@ namespace TTBooking\WBEngine\Http\Controllers;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
-use TTBooking\WBEngine\Contracts\Session;
 use TTBooking\WBEngine\DTO\Common\Result;
 use TTBooking\WBEngine\Http\Requests\SelectRequest;
+use TTBooking\WBEngine\Session;
 
 use function TTBooking\WBEngine\Functional\do\choose;
 
