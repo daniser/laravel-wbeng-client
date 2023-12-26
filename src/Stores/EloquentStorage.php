@@ -46,7 +46,14 @@ class EloquentStorage implements StateStorage
         }
     }
 
-    public function put(StorableState $state): State
+    /**
+     * @template TState of StorableState<ResultInterface, QueryInterface<ResultInterface>>
+     *
+     * @phpstan-param TState $state
+     *
+     * @phpstan-return TState
+     */
+    public function put(StorableState $state): StorableState
     {
         if ($state instanceof State) {
             $state->save();
@@ -54,6 +61,7 @@ class EloquentStorage implements StateStorage
             return $state;
         }
 
+        /** @var TState */
         return $this->model->newQuery()->forceCreate([
             'session_uuid' => $state->getSessionId(),
             'base_uri' => $state->getBaseUri(),
@@ -77,6 +85,7 @@ class EloquentStorage implements StateStorage
             };
         }
 
+        /** @var LazyCollection<string, State<ResultInterface, QueryInterface<ResultInterface>>> */
         return $query->lazyById()->keyBy('uuid');
     }
 

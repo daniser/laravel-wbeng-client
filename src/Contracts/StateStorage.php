@@ -32,14 +32,14 @@ interface StateStorage
 
     /**
      * @param  array<string, mixed>  $conditions
-     * @return Enumerable<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>>
+     * @return Enumerable<string, covariant StorableState<ResultInterface, QueryInterface<ResultInterface>>>
      *
      * @throws UnsupportedConditionException
      */
     public function where(array $conditions): Enumerable;
 
     /**
-     * @return Enumerable<string, StorableState<ResultInterface, QueryInterface<ResultInterface>>>
+     * @return Enumerable<string, covariant StorableState<ResultInterface, QueryInterface<ResultInterface>>>
      */
     public function all(): Enumerable;
 }

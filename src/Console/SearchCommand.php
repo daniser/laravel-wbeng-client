@@ -11,10 +11,13 @@ use Symfony\Component\Console\Helper\TableCell;
 use Symfony\Component\Console\Helper\TableCellStyle;
 use TTBooking\WBEngine\ClientInterface;
 use TTBooking\WBEngine\Contracts\ClientFactory;
+use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\DTO\Common\Result;
 use TTBooking\WBEngine\DTO\CreateBooking\Result as CBResult;
 use TTBooking\WBEngine\DTO\Enums\Gender;
 use TTBooking\WBEngine\DTO\Enums\PassengerType;
+use TTBooking\WBEngine\DTO\SearchFlights\Query as SearchQuery;
+use TTBooking\WBEngine\DTO\SelectFlight\Query as SelectQuery;
 use TTBooking\WBEngine\StateInterface;
 
 use function Laravel\Prompts\{note, search, select, spin, table, text, warning};
@@ -176,7 +179,10 @@ class SearchCommand extends Command
     }
 
     /**
-     * @return StateInterface<Result>
+     * @template TState of StorableState<Result, SearchQuery>
+     *
+     * @param  ClientInterface<TState>  $client
+     * @phpstan-return TState
      */
     protected function searchFlights(ClientInterface $client, string $origin, string $destination, string $date): StateInterface
     {
@@ -186,7 +192,10 @@ class SearchCommand extends Command
     }
 
     /**
-     * @return StateInterface<Result>
+     * @template TState of StorableState<Result, SelectQuery>
+     *
+     * @param  ClientInterface<TState>  $client
+     * @phpstan-return TState
      */
     protected function selectFlight(ClientInterface $client, Result $searchResult, int $flightGroupId, int $itineraryId, int $flightId): StateInterface
     {
