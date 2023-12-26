@@ -44,7 +44,8 @@
     "extra": {
         "laravel": {
             "providers": [
-                "TTBooking\\WBEngine\\WBEngineServiceProvider"
+                "TTBooking\\WBEngine\\WBEngineServiceProvider",
+                "TTBooking\\WBEngine\\WBEngineApiServiceProvider"
             ],
             "aliases": {
                 "WBEngine": "TTBooking\\WBEngine\\Facades\\WBEngine",

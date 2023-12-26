@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine;
 
+use Illuminate\Console\Command;
 use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Pipeline\Pipeline;
-use Illuminate\Support\Facades\Route;
 use Illuminate\Support\ServiceProvider;
 
-class WBEngineServiceProvider extends ServiceProvider //implements DeferrableProvider
+class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
      * All of the container singletons that should be registered.
      *
-     * @var array<string, string>
+     * @var array<string, class-string>
      */
     public array $singletons = [
         'wbeng-client' => ConnectionManager::class,
@@ -23,83 +23,14 @@ class WBEngineServiceProvider extends ServiceProvider //implements DeferrablePro
     ];
 
     /**
-     * Bootstrap any application services.
+     * The commands to be registered.
+     *
+     * @var list<class-string<Command>>
      */
-    public function boot(): void
-    {
-        $this->registerRouteBindingCallback();
-        $this->registerRoutes();
-        $this->registerResources();
-        $this->registerCommands();
-
-        if ($this->app->runningInConsole()) {
-            $this->offerPublishing();
-            $this->registerMigrations();
-        }
-    }
-
-    /**
-     * Register the WBEngine Client implicit session resolution callback.
-     */
-    protected function registerRouteBindingCallback(): void
-    {
-        Route::substituteImplicitBindingsUsing(Support\SessionRouteBinding::resolveForRoute(...));
-    }
-
-    /**
-     * Register the WBEngine Client routes.
-     */
-    protected function registerRoutes(): void
-    {
-        Route::domain($this->app['config']['wbeng-api.domain'] ?? '')
-            ->prefix($this->app['config']['wbeng-api.path'] ?? '')
-            ->name('wbeng-api.')
-            ->namespace('TTBooking\\WBEngine\\Http\\Controllers')
-            ->middleware($this->app['config']['wbeng-api.middleware'] ?? 'api')
-            ->group(fn () => $this->loadRoutesFrom(__DIR__.'/../routes/api.php'));
-    }
-
-    /**
-     * Register the WBEngine Client resources.
-     */
-    protected function registerResources(): void
-    {
-        $this->loadTranslationsFrom(__DIR__.'/../lang', 'wbeng-client');
-    }
-
-    /**
-     * Register the WBEngine Client Artisan commands.
-     */
-    protected function registerCommands(): void
-    {
-        $this->commands([
-            Console\SearchCommand::class,
-            Console\SelectCommand::class,
-        ]);
-    }
-
-    /**
-     * Setup the resource publishing groups for WBEngine Client.
-     */
-    protected function offerPublishing(): void
-    {
-        $this->publishes([
-            __DIR__.'/../config/wbeng-api.php' => $this->app->configPath('wbeng-api.php'),
-            __DIR__.'/../config/wbeng-client.php' => $this->app->configPath('wbeng-client.php'),
-        ], ['wbeng-client-config', 'wbeng-client', 'config']);
-
-        $this->publishes([
-            __DIR__.'/../database/migrations' => $this->app->databasePath('migrations'),
-        ], ['wbeng-client-migrations', 'wbeng-client', 'migrations']);
-    }
-
-    /**
-     * Register the WBEngine Client's migrations.
-     */
-    protected function registerMigrations(): void
-    {
-        $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-    }
+    protected array $commands = [
+        Console\SearchCommand::class,
+        Console\SelectCommand::class,
+    ];
 
     /**
      * Register any application services.
@@ -108,6 +39,7 @@ class WBEngineServiceProvider extends ServiceProvider //implements DeferrablePro
     {
         $this->configure();
         $this->registerServices();
+        $this->registerCommands();
     }
 
     /**
@@ -115,7 +47,6 @@ class WBEngineServiceProvider extends ServiceProvider //implements DeferrablePro
      */
     protected function configure(): void
     {
-        $this->mergeConfigFrom(__DIR__.'/../config/wbeng-api.php', 'wbeng-api');
         $this->mergeConfigFrom(__DIR__.'/../config/wbeng-client.php', 'wbeng-client');
     }
 
@@ -151,6 +82,18 @@ class WBEngineServiceProvider extends ServiceProvider //implements DeferrablePro
     }
 
     /**
+     * Register the WBEngine Client Artisan commands.
+     */
+    protected function registerCommands(): void
+    {
+        foreach ($this->commands as $command) {
+            $this->app->singleton($command);
+        }
+
+        $this->commands($this->commands);
+    }
+
+    /**
      * Get the services provided by the provider.
      *
      * @return list<string>
@@ -164,6 +107,7 @@ class WBEngineServiceProvider extends ServiceProvider //implements DeferrablePro
             Contracts\ClientFactory::class, ClientInterface::class,
             'wbeng-store', 'wbeng-store.store',
             Contracts\StorageFactory::class, Contracts\SessionFactory::class, Contracts\StateStorage::class,
+            ...$this->commands,
         ];
     }
 }
