@@ -182,6 +182,7 @@ class SearchCommand extends Command
      * @template TState of StorableState<Result, SearchQuery>
      *
      * @param  ClientInterface<TState>  $client
+     *
      * @phpstan-return TState
      */
     protected function searchFlights(ClientInterface $client, string $origin, string $destination, string $date): StateInterface
@@ -195,6 +196,7 @@ class SearchCommand extends Command
      * @template TState of StorableState<Result, SelectQuery>
      *
      * @param  ClientInterface<TState>  $client
+     *
      * @phpstan-return TState
      */
     protected function selectFlight(ClientInterface $client, Result $searchResult, int $flightGroupId, int $itineraryId, int $flightId): StateInterface
