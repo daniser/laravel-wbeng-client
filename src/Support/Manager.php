@@ -13,7 +13,7 @@ use InvalidArgumentException;
 use TTBooking\WBEngine\Contracts\Factory;
 
 /**
- * @template TConnection of object
+ * @template-covariant TConnection of object
  *
  * @implements Factory<TConnection>
  */
@@ -58,6 +58,13 @@ abstract class Manager implements Factory
         return $this->config->get($this->getSelectorKey(), 'default');
     }
 
+    /**
+     * Get a connection instance.
+     *
+     * @phpstan-return TConnection
+     *
+     * @throws InvalidArgumentException
+     */
     public function connection(?string $name = null): object
     {
         $name ??= $this->getDefaultDriver();
@@ -65,6 +72,11 @@ abstract class Manager implements Factory
         return $this->connections[$name] ??= $this->resolve($name);
     }
 
+    /**
+     * Get all of the created connections.
+     *
+     * @return array<string, TConnection>
+     */
     public function getConnections(): array
     {
         return $this->connections;

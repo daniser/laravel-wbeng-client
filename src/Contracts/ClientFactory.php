@@ -7,7 +7,7 @@ namespace TTBooking\WBEngine\Contracts;
 use TTBooking\WBEngine\ClientInterface;
 
 /**
- * @extends Factory<ClientInterface>
+ * @extends Factory<ClientInterface<StorableState>>
  */
 interface ClientFactory extends Factory
 {

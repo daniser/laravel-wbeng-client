@@ -29,16 +29,34 @@ class ExtendedClient implements ClientInterface
         return new self($this->client->continue($state), $this->pipeline, $this->middleware);
     }
 
-    public function query(QueryInterface $query): StateInterface
+    /**
+     * @template TResult of ResultInterface
+     * @template TQuery of QueryInterface<TResult>
+     *
+     * @phpstan-param TQuery $query
+     *
+     * @return StorableState<TResult, TQuery>
+     */
+    public function query(QueryInterface $query): StorableState
     {
+        /** @var StorableState<TResult, TQuery> */
         return $this->pipeline
             ->send($query)
             ->through($this->middleware)
             ->then($this->client->query(...));
     }
 
+    /**
+     * @template TResult of ResultInterface
+     * @template TQuery of QueryInterface<TResult>
+     *
+     * @phpstan-param TQuery $query
+     *
+     * @return Promise<StorableState<TResult, TQuery>>
+     */
     public function asyncQuery(QueryInterface $query): Promise
     {
+        /** @var Promise<StorableState<TResult, TQuery>> */
         return $this->pipeline
             ->send($query)
             ->through($this->middleware)

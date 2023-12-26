@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine;
 
+use Exception;
 use Http\Promise\Promise;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
+use Psr\Http\Client\ClientExceptionInterface;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\DTO\Common\Query\Context;
 use TTBooking\WBEngine\DTO\Enums\RespondType;
 
 /**
- * @extends Support\Manager<ClientInterface>
+ * @extends Support\Manager<ClientInterface<StorableState>>
  *
  * @implements ClientInterface<StorableState>
  */
@@ -25,13 +27,35 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
         return $this->connection()->continue($state);
     }
 
-    public function query(QueryInterface $query): StateInterface
+    /**
+     * @template TResult of ResultInterface
+     * @template TQuery of QueryInterface<TResult>
+     *
+     * @phpstan-param TQuery $query
+     *
+     * @return StorableState<TResult, TQuery>
+     *
+     * @throws ClientExceptionInterface
+     */
+    public function query(QueryInterface $query): StorableState
     {
+        /** @var StorableState<TResult, TQuery> */
         return $this->connection()->query($query);
     }
 
+    /**
+     * @template TResult of ResultInterface
+     * @template TQuery of QueryInterface<TResult>
+     *
+     * @phpstan-param TQuery $query
+     *
+     * @return Promise<StorableState<TResult, TQuery>>
+     *
+     * @throws Exception
+     */
     public function asyncQuery(QueryInterface $query): Promise
     {
+        /** @var Promise<StorableState<TResult, TQuery>> */
         return $this->connection()->asyncQuery($query);
     }
 

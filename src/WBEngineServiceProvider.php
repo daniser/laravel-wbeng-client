@@ -140,6 +140,7 @@ class WBEngineServiceProvider extends ServiceProvider //implements DeferrablePro
             /** @var list<class-string> $middleware */
             $middleware = config('wbeng-client.middleware', []);
 
+            /** @phpstan-ignore-next-line */
             return new ExtendedClient($client, new Pipeline($container), $middleware);
         });
 

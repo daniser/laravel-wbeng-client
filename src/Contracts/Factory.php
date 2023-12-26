@@ -7,7 +7,7 @@ namespace TTBooking\WBEngine\Contracts;
 use InvalidArgumentException;
 
 /**
- * @template TConnection of object
+ * @template-covariant TConnection of object
  */
 interface Factory
 {
