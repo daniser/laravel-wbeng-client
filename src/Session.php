@@ -7,7 +7,6 @@ namespace TTBooking\WBEngine;
 use Exception;
 use Http\Promise\Promise;
 use Illuminate\Support\Enumerable;
-use Psr\Http\Client\ClientExceptionInterface;
 use TTBooking\WBEngine\Contracts\Session as SessionContract;
 use TTBooking\WBEngine\Contracts\StorableState;
 
@@ -37,7 +36,7 @@ class Session implements SessionContract
      *
      * @return StorableState<TResult, TQuery>
      *
-     * @throws ClientExceptionInterface
+     * @throws ClientException
      */
     public function query(QueryInterface $query): StorableState
     {

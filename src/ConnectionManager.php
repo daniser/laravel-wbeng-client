@@ -8,7 +8,6 @@ use Exception;
 use Http\Promise\Promise;
 use Illuminate\Contracts\Container\BindingResolutionException;
 use Illuminate\Support\Arr;
-use Psr\Http\Client\ClientExceptionInterface;
 use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\DTO\Common\Query\Context;
 use TTBooking\WBEngine\DTO\Enums\RespondType;
@@ -35,7 +34,7 @@ class ConnectionManager extends Support\Manager implements ClientInterface, Cont
      *
      * @return StorableState<TResult, TQuery>
      *
-     * @throws ClientExceptionInterface
+     * @throws ClientException
      */
     public function query(QueryInterface $query): StorableState
     {

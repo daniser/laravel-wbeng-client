@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine;
 
+use Exception;
 use Http\Promise\Promise;
 use Illuminate\Contracts\Pipeline\Pipeline;
 use TTBooking\WBEngine\Contracts\StorableState;
@@ -36,6 +37,8 @@ class ExtendedClient implements ClientInterface
      * @phpstan-param TQuery $query
      *
      * @return StorableState<TResult, TQuery>
+     *
+     * @throws ClientException
      */
     public function query(QueryInterface $query): StorableState
     {
@@ -53,6 +56,8 @@ class ExtendedClient implements ClientInterface
      * @phpstan-param TQuery $query
      *
      * @return Promise<StorableState<TResult, TQuery>>
+     *
+     * @throws Exception
      */
     public function asyncQuery(QueryInterface $query): Promise
     {
