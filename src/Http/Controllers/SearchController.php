@@ -24,7 +24,7 @@ class SearchController extends Controller
     public function __invoke(SearchRequest $request, ClientInterface $client): JsonResponse
     {
         $result = $client->query(
-            fly()->complex()
+            fly()->from($request->from)->to($request->to)->on($request->date)
         )->getResult();
 
         return new JsonResponse($result);
