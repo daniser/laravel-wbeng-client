@@ -8,9 +8,11 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use TTBooking\WBEngine\ClientInterface;
 use TTBooking\WBEngine\Contracts\StorableState;
+use TTBooking\WBEngine\DTO\Common\Result;
 use TTBooking\WBEngine\Http\Requests\SearchRequest;
 use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
+use TTBooking\WBEngine\Session;
 
 use function TTBooking\WBEngine\Functional\do\fly;
 
@@ -26,6 +28,14 @@ class SearchController extends Controller
         $result = $client->query(
             fly()->from($request->from)->to($request->to)->on($request->date)
         )->getResult();
+
+        return new JsonResponse($result);
+    }
+
+    public function load(Session $session): JsonResponse
+    {
+        /** @var Result $result */
+        $result = $session->history('flights')->firstOrFail()->getResult();
 
         return new JsonResponse($result);
     }
