@@ -9,6 +9,7 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
+use TTBooking\WBEngine\Middleware\AmendMiddleware;
 
 class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvider
 {
@@ -74,6 +75,9 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
             /** @phpstan-ignore-next-line */
             return new ExtendedClient($client, new Pipeline($container), $middleware);
         });
+
+        $this->app->when(AmendMiddleware::class)->needs('$typeAmenders')->giveConfig('wbeng-client.amenders.type', []);
+        $this->app->when(AmendMiddleware::class)->needs('$pathAmenders')->giveConfig('wbeng-client.amenders.path', []);
 
         $this->app->singleton('wbeng-store.store', static fn ($app) => $app['wbeng-store']->connection());
         $this->app->alias('wbeng-store', Contracts\StorageFactory::class);

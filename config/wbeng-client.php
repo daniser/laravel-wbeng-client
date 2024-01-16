@@ -87,7 +87,23 @@ return [
     */
 
     'middleware' => [
+        TTBooking\WBEngine\Middleware\AmendMiddleware::class,
         TTBooking\WBEngine\Middleware\StoreMiddleware::class,
+    ],
+
+    /*
+    |--------------------------------------------------------------------------
+    | Result Amenders
+    |--------------------------------------------------------------------------
+    */
+
+    'amenders' => [
+        'type' => [
+            //
+        ],
+        'path' => [
+            //
+        ],
     ],
 
     /*
