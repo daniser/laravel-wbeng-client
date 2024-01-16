@@ -18,8 +18,8 @@ use TTBooking\WBEngine\Support\RecursivePathIterator;
 class AmendMiddleware
 {
     /**
-     * @param  array<class-string, list<class-string<Amender>>>  $typeAmenders
-     * @param  array<string, list<class-string<Amender>>>  $pathAmenders
+     * @param  array<class-string, list<class-string<Amender<object>>>>  $typeAmenders
+     * @param  array<string, list<class-string<Amender<object>>>>  $pathAmenders
      */
     public function __construct(
         protected Container $container,
@@ -52,11 +52,11 @@ class AmendMiddleware
             $path = $iterator->path();
 
             if (is_object($item)) {
-                $this->amend($this->typeAmenders[$item::class], $item, $path, $key);
+                $this->amend($this->typeAmenders[$item::class], $item, $key, $result, $path);
 
                 foreach ($this->pathAmenders as $pattern => $amenderClasses) {
                     if (fnmatch($pattern, $path)) {
-                        $this->amend($amenderClasses, $item, $path, $key);
+                        $this->amend($amenderClasses, $item, $key, $result, $path);
                     }
                 }
             }
@@ -66,14 +66,14 @@ class AmendMiddleware
     }
 
     /**
-     * @param  list<class-string<Amender>>  $amenderClasses
+     * @param  list<class-string<Amender<object>>>  $amenderClasses
      */
-    protected function amend(array $amenderClasses, object $item, string $path, string $key): void
+    protected function amend(array $amenderClasses, object $item, string $key, object $entity, string $path): void
     {
         foreach ($amenderClasses as $amenderClass) {
-            /** @var Amender $amender */
+            /** @var Amender<object> $amender */
             $amender = $this->container->make($amenderClass);
-            $amender->amend($item, $path, $key);
+            $amender->amend($item, $key, $entity, $path);
         }
     }
 }
