@@ -12,5 +12,5 @@ interface Amender
     /**
      * @phpstan-param TItem $item
      */
-    public function amend(object $item, string $key, object $entity, string $path): void;
+    public function amend(object $item, string|int $key, object $entity, string $path): void;
 }
