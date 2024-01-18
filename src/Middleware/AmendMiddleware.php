@@ -18,8 +18,8 @@ use TTBooking\WBEngine\Support\RecursivePathIterator;
 class AmendMiddleware
 {
     /**
-     * @param  array<class-string, list<class-string<Amender<object>>>>  $typeAmenders
-     * @param  array<string, list<class-string<Amender<object>>>>  $pathAmenders
+     * @param  array<class-string, list<class-string<Amender<object>>>|class-string<Amender<object>>>  $typeAmenders
+     * @param  array<string, list<class-string<Amender<object>>>|class-string<Amender<object>>>  $pathAmenders
      */
     public function __construct(
         protected Container $container,
@@ -52,11 +52,11 @@ class AmendMiddleware
             $path = $iterator->path();
 
             if (is_object($item)) {
-                $this->amend($this->typeAmenders[$item::class] ?? [], $item, $key, $result, $path);
+                $this->amend((array) ($this->typeAmenders[$item::class] ?? []), $item, $key, $result, $path);
 
                 foreach ($this->pathAmenders as $pattern => $amenderClasses) {
                     if (fnmatch($pattern, $path)) {
-                        $this->amend($amenderClasses, $item, $key, $result, $path);
+                        $this->amend((array) $amenderClasses, $item, $key, $result, $path);
                     }
                 }
             }

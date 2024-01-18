@@ -87,8 +87,8 @@ return [
     */
 
     'middleware' => [
-        TTBooking\WBEngine\Middleware\AmendMiddleware::class,
         TTBooking\WBEngine\Middleware\StoreMiddleware::class,
+        TTBooking\WBEngine\Middleware\AmendMiddleware::class,
     ],
 
     /*
