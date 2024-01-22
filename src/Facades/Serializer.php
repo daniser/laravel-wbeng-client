@@ -7,8 +7,8 @@ namespace TTBooking\WBEngine\Facades;
 use Illuminate\Support\Facades\Facade;
 
 /**
- * @method static string serialize(mixed $data)
- * @method static object deserialize(string $data, string $type)
+ * @method static string serialize(mixed $data, array $context = [])
+ * @method static object deserialize(string $data, string $type, array $context = [])
  *
  * @see \TTBooking\WBEngine\Serializer
  */
