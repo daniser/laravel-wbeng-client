@@ -11,12 +11,17 @@ use TTBooking\WBEngine\Contracts\StorableState;
 use TTBooking\WBEngine\Http\Requests\SearchRequest;
 use TTBooking\WBEngine\QueryInterface;
 use TTBooking\WBEngine\ResultInterface;
+use TTBooking\WBEngine\SerializerInterface;
 use TTBooking\WBEngine\Session;
 
 use function TTBooking\WBEngine\Functional\do\fly;
 
 class SearchController extends Controller
 {
+    public function __construct(protected SerializerInterface $serializer)
+    {
+    }
+
     /**
      * Handle the incoming request.
      *
@@ -28,7 +33,7 @@ class SearchController extends Controller
             fly()->from($request->from)->to($request->to)->on($request->date)
         )->getResult();
 
-        return new JsonResponse($result);
+        return new JsonResponse($this->serializer->serialize($result), json: true);
     }
 
     public function load(Session $session): JsonResponse
@@ -36,6 +41,6 @@ class SearchController extends Controller
         /** @var StorableState<ResultInterface, QueryInterface<ResultInterface>> $state */
         $state = $session->history('flights')->firstOrFail();
 
-        return new JsonResponse($state);
+        return new JsonResponse($this->serializer->serialize($state), json: true);
     }
 }

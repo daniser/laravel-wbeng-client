@@ -8,12 +8,17 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Routing\Controller;
 use TTBooking\WBEngine\DTO\Common\Result;
 use TTBooking\WBEngine\Http\Requests\SelectRequest;
+use TTBooking\WBEngine\SerializerInterface;
 use TTBooking\WBEngine\Session;
 
 use function TTBooking\WBEngine\Functional\do\choose;
 
 class SelectController extends Controller
 {
+    public function __construct(protected SerializerInterface $serializer)
+    {
+    }
+
     /**
      * Handle the incoming request.
      */
@@ -26,6 +31,6 @@ class SelectController extends Controller
             choose()->fromSearchResult($searchResult, 0, 0, 0)
         )->getResult();
 
-        return new JsonResponse($result);
+        return new JsonResponse($this->serializer->serialize($result), json: true);
     }
 }

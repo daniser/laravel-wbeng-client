@@ -18,10 +18,20 @@ use TTBooking\WBEngine\ResultInterface;
  */
 class Query implements CastsAttributes
 {
+    /** @var array<string, true> */
+    protected array $context;
+
+    public function __construct(string ...$arguments)
+    {
+        $this->context = array_fill_keys($arguments, true);
+    }
+
     public function get(Model $model, string $key, mixed $value, array $attributes): ?QueryInterface
     {
+        $type = EndpointQueryMap::getQueryClassFromEndpoint($attributes['endpoint']);
+
         /** @var TQuery */
-        return Serializer::deserialize($value, EndpointQueryMap::getQueryClassFromEndpoint($attributes['endpoint']));
+        return Serializer::deserialize($value, $type, $this->context);
     }
 
     /**
@@ -31,7 +41,7 @@ class Query implements CastsAttributes
     {
         return [
             'endpoint' => $value::getEndpoint(),
-            'query' => Serializer::serialize($value),
+            'query' => Serializer::serialize($value, $this->context),
         ];
     }
 }
