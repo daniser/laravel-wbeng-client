@@ -38,9 +38,8 @@ class SearchController extends Controller
 
     public function load(Session $session): JsonResponse
     {
-        /** @var StorableState<ResultInterface, QueryInterface<ResultInterface>> $state */
-        $state = $session->history('flights')->firstOrFail();
+        $result = $session->history('flights')->firstOrFail()->getResult();
 
-        return new JsonResponse($this->serializer->serialize($state), json: true);
+        return new JsonResponse($this->serializer->serialize($result), json: true);
     }
 }
