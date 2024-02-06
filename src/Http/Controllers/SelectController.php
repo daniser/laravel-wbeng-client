@@ -27,9 +27,19 @@ class SelectController extends Controller
         /** @var Result $searchResult */
         $searchResult = $session->history('flights')->firstOrFail()->getResult();
 
-        $result = $session->query(
-            choose()->fromSearchResult($searchResult, 0, 0, 0)
-        )->getResult();
+        $state = $session->query(
+            choose()->fromSearchResult($searchResult, $request->flightGroupId, 0, 0)
+        );
+
+        return new JsonResponse([
+            'id' => $state->getId(),
+            'session_id' => $state->getSessionId(),
+        ]);
+    }
+
+    public function load(Session $session): JsonResponse
+    {
+        $result = $session->history('price')->firstOrFail()->getResult();
 
         return new JsonResponse($this->serializer->serialize($result), json: true);
     }

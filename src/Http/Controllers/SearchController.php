@@ -29,11 +29,14 @@ class SearchController extends Controller
      */
     public function __invoke(SearchRequest $request, ClientInterface $client): JsonResponse
     {
-        $result = $client->query(
+        $state = $client->query(
             fly()->from($request->from)->to($request->to)->on($request->date)
-        )->getResult();
+        );
 
-        return new JsonResponse($this->serializer->serialize($result), json: true);
+        return new JsonResponse([
+            'id' => $state->getId(),
+            'session_id' => $state->getSessionId(),
+        ]);
     }
 
     public function load(Session $session): JsonResponse

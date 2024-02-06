@@ -6,3 +6,4 @@ use TTBooking\WBEngine\Http\Controllers;
 Route::post('/search', Controllers\SearchController::class)->name('search');
 Route::get('/search/{session}', [Controllers\SearchController::class, 'load'])->name('loadSearch');
 Route::post('/select/{session}', Controllers\SelectController::class)->name('select');
+Route::get('/select/{session}', [Controllers\SelectController::class, 'load'])->name('loadSelect');
