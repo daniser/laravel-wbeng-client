@@ -7,7 +7,7 @@ namespace TTBooking\WBEngine\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @property int $flightGroupId
+ * @property-read int $flightGroupId
  */
 class SelectRequest extends FormRequest
 {
@@ -39,5 +39,10 @@ class SelectRequest extends FormRequest
     public function attributes(): array
     {
         return (array) trans('wbeng-client::validation.attributes');
+    }
+
+    protected function passedValidation(): void
+    {
+        $this['flightGroupId'] = (int) $this['flightGroupId']; // @phpstan-ignore-line
     }
 }

@@ -7,9 +7,9 @@ namespace TTBooking\WBEngine\Http\Requests;
 use Illuminate\Foundation\Http\FormRequest;
 
 /**
- * @property string $from
- * @property string $to
- * @property string $date
+ * @property-read string $from
+ * @property-read string $to
+ * @property-read string $date
  */
 class SearchRequest extends FormRequest
 {
