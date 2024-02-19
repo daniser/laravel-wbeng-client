@@ -82,8 +82,8 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->when(AmendMiddleware::class)->needs('$typeAmenders')->giveConfig('wbeng-client.amenders.type', []);
         $this->app->when(AmendMiddleware::class)->needs('$pathAmenders')->giveConfig('wbeng-client.amenders.path', []);
 
-        $this->app->when(AutocompleteController::class)->needs('$airportPrompter')->give(fn () => $this->prompter('airport'));
-        $this->app->when(AutocompleteController::class)->needs('$airlinePrompter')->give(fn () => $this->prompter('airline'));
+        $this->app->singleton('wbeng-client.prompters.airport', fn () => $this->prompter('airport'));
+        $this->app->singleton('wbeng-client.prompters.airline', fn () => $this->prompter('airline'));
 
         $this->app->singleton('wbeng-store.store', static fn ($app) => $app['wbeng-store']->connection());
         $this->app->alias('wbeng-store', Contracts\StorageFactory::class);
@@ -138,6 +138,7 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
             Contracts\ClientFactory::class, ClientInterface::class,
             'wbeng-store', 'wbeng-store.store',
             Contracts\StorageFactory::class, Contracts\SessionFactory::class, Contracts\StateStorage::class,
+            'wbeng-client.prompters.airport', 'wbeng-client.prompters.airline',
             ...$this->commands,
         ];
     }

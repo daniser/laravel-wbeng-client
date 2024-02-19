@@ -10,13 +10,13 @@ use TTBooking\WBEngine\Contracts\Prompter;
 
 class AutocompleteController extends Controller
 {
-    public function airports(Prompter $airportPrompter, string $input): JsonResponse
+    public function airports(string $input): JsonResponse
     {
-        return new JsonResponse($airportPrompter->prompt($input));
+        return new JsonResponse(app('wbeng-client.prompters.airport')->prompt($input));
     }
 
-    public function airlines(Prompter $airlinePrompter, string $input): JsonResponse
+    public function airlines(string $input): JsonResponse
     {
-        return new JsonResponse($airlinePrompter->prompt($input));
+        return new JsonResponse(app('wbeng-client.prompters.airline')->prompt($input));
     }
 }
