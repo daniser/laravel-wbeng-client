@@ -9,6 +9,9 @@ use Illuminate\Contracts\Container\Container;
 use Illuminate\Contracts\Support\DeferrableProvider;
 use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
+use InvalidArgumentException;
+use TTBooking\WBEngine\Contracts\Prompter;
+use TTBooking\WBEngine\Http\Controllers\AutocompleteController;
 use TTBooking\WBEngine\Middleware\AmendMiddleware;
 
 class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvider
@@ -79,10 +82,34 @@ class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvi
         $this->app->when(AmendMiddleware::class)->needs('$typeAmenders')->giveConfig('wbeng-client.amenders.type', []);
         $this->app->when(AmendMiddleware::class)->needs('$pathAmenders')->giveConfig('wbeng-client.amenders.path', []);
 
+        $this->app->when(AutocompleteController::class)->needs('$airportPrompter')->give(fn () => $this->prompter('airport'));
+        $this->app->when(AutocompleteController::class)->needs('$airlinePrompter')->give(fn () => $this->prompter('airline'));
+
         $this->app->singleton('wbeng-store.store', static fn ($app) => $app['wbeng-store']->connection());
         $this->app->alias('wbeng-store', Contracts\StorageFactory::class);
         $this->app->alias('wbeng-store.store', Contracts\SessionFactory::class);
         $this->app->alias('wbeng-store.store', Contracts\StateStorage::class);
+    }
+
+    private function prompter(string $type): Prompter
+    {
+        $prompter = config("wbeng-client.prompters.$type");
+
+        if (! $prompter) {
+            return new class implements Prompter
+            {
+                public function prompt(string $input): array
+                {
+                    return [];
+                }
+            };
+        }
+
+        if (! is_string($prompter) || ! is_subclass_of($prompter, Prompter::class)) {
+            throw new InvalidArgumentException('Prompter must be class implementing ['.Prompter::class.'] interface.');
+        }
+
+        return $this->app->make($prompter);
     }
 
     /**

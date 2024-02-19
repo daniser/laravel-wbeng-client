@@ -108,10 +108,13 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | IATA Location Prompter Callback
+    | Autocomplete Prompters
     |--------------------------------------------------------------------------
     */
 
-    'iata_location_prompter' => null,
+    'prompters' => [
+        'airport' => null,
+        'airline' => null,
+    ],
 
 ];
