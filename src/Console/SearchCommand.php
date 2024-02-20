@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace TTBooking\WBEngine\Console;
 
+use Closure;
 use Illuminate\Console\Command;
 use Illuminate\Support\Collection;
 use Symfony\Component\Console\Attribute\AsCommand;
@@ -16,6 +17,7 @@ use TTBooking\WBEngine\DTO\Common\Result;
 use TTBooking\WBEngine\DTO\CreateBooking\Result as CBResult;
 use TTBooking\WBEngine\DTO\Enums\Gender;
 use TTBooking\WBEngine\DTO\Enums\PassengerType;
+use TTBooking\WBEngine\DTO\Prompt;
 use TTBooking\WBEngine\DTO\SearchFlights\Query as SearchQuery;
 use TTBooking\WBEngine\DTO\SelectFlight\Query as SelectQuery;
 use TTBooking\WBEngine\StateInterface;
@@ -55,8 +57,15 @@ class SearchCommand extends Command
      */
     public function handle(ClientFactory $clientFactory): int
     {
-        /** @var null|callable(string): array<string, string> $prompter */
-        $prompter = config('wbeng-client.iata_location_prompter');
+        /** @var Closure(string): array<string, string> $prompter */
+        $prompter = static function (string $input) {
+            $prompts = app('wbeng-client.prompters.airport')->prompt($input);
+
+            /** @return array<string, string> */
+            return collect($prompts)
+                ->mapWithKeys(static fn (Prompt $prompt) => [(string) $prompt->value => $prompt->title])
+                ->all();
+        };
 
         /** @var string $connection */
         $connection = $this->option('connection');
