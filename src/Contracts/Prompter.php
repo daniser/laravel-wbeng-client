@@ -9,7 +9,7 @@ use TTBooking\WBEngine\DTO\Prompt;
 interface Prompter
 {
     /**
-     * @return array<Prompt>
+     * @return list<Prompt>
      */
     public function prompt(string $input): array;
 }

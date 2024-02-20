@@ -9,13 +9,15 @@ use Stringable;
 class Prompt implements Stringable
 {
     public function __construct(
+        public string|int $value,
+
         public string $title,
 
         public ?string $subtitle = null,
 
         public ?string $icon = null,
 
-        public ?string $level = null,
+        public ?int $level = null,
     ) {
     }
 
