@@ -25,7 +25,7 @@
         "laravel/pint": "^1.11",
         "mockery/mockery": "^1.4.4",
         "orchestra/testbench": "^8.14 || ^9.0",
-        "pestphp/pest": "^2.0",
+        "pestphp/pest": "^2.0 || ^3.0",
         "pestphp/pest-plugin-laravel": "^2.2"
     },
     "autoload": {
