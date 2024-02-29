@@ -313,12 +313,9 @@ class SearchCommand extends Command
         /** @var string $connection */
         $connection = $this->option('connection');
 
-        /** @var string|null $defaultRegion */
-        $defaultRegion = config('app.locale');
-
         $query = book()
             ->fromSearchResult($searchResult, $flightGroupId, $itineraryId, $flightId)
-            ->customer(static::getCustomerName(), static::getCustomerEmail(), static::getCustomerPhone(), $defaultRegion)
+            ->customer(static::getCustomerName(), static::getCustomerEmail(), static::getCustomerPhone())
             ->passengers(passenger()
                 ->type(static::choosePassengerType())
                 ->gender(static::choosePassengerGender())
@@ -326,7 +323,7 @@ class SearchCommand extends Command
                 ->firstName(static::getPassengerName())
                 ->middleName(static::getPassengerMiddleName())
                 ->birthDate(static::getPassengerBirthDate())
-                ->phone(static::getPassengerPhone(), $defaultRegion)
+                ->phone(static::getPassengerPhone())
             );
 
         return spin(fn (): CBResult => $clientFactory->connection($connection)->query($query)->getResult(), 'Booking flight...');
