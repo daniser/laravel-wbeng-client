@@ -11,17 +11,16 @@ use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\ServiceProvider;
 use InvalidArgumentException;
 use TTBooking\WBEngine\Contracts\Prompter;
-use TTBooking\WBEngine\Http\Controllers\AutocompleteController;
 use TTBooking\WBEngine\Middleware\AmendMiddleware;
 
 class WBEngineServiceProvider extends ServiceProvider implements DeferrableProvider
 {
     /**
-     * All of the container singletons that should be registered.
+     * All of the singletons that should be registered.
      *
      * @var array<string, class-string>
      */
-    public array $singletons = [
+    public $singletons = [
         'wbeng-client' => ConnectionManager::class,
         'wbeng-store' => StorageManager::class,
     ];
